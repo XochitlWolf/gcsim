@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // @ts-ignore
-self.importScripts("/wasm_exec.js");
+self.importScripts("../wasm_exec.js");
 
 if (!WebAssembly.instantiateStreaming) {
   // polyfill
@@ -14,15 +14,16 @@ if (!WebAssembly.instantiateStreaming) {
 function ready(req: { wasm: string }) {
   const go = new Go();
   WebAssembly.instantiateStreaming(fetch(req.wasm), go.importObject)
-      .then((result) => {
-        go.run(result.instance);
-        postMessage({ type: WorkerResponse.Ready });
-      }).catch((e) => {
-        console.error(e);
-        postMessage({
-          type: WorkerResponse.Failed,
-          reason: e instanceof Error ? e.message : "Unknown Error" });
+    .then((result) => {
+      go.run(result.instance);
+      postMessage({ type: WorkerResponse.Ready });
+    }).catch((e) => {
+      console.error(e);
+      postMessage({
+        type: WorkerResponse.Failed,
+        reason: e instanceof Error ? e.message : "Unknown Error"
       });
+    });
 }
 
 // @ts-ignore
@@ -36,7 +37,7 @@ function initialize(req: { cfg: string }) {
 
 function run(req: { itr: number }) {
   const resp = simulate();
-  if (typeof(resp) == "string" || resp instanceof String) {
+  if (typeof (resp) == "string" || resp instanceof String) {
     return { type: WorkerResponse.Failed, reason: JSON.parse(resp as string).error };
   }
   return { type: WorkerResponse.Done, result: resp, itr: req.itr };
