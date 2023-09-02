@@ -7,10 +7,14 @@ import (
 	"strings"
 
 	"github.com/genshinsim/gcsim/pkg/core/action"
+	"github.com/genshinsim/gcsim/pkg/core/attacks"
+	"github.com/genshinsim/gcsim/pkg/core/attributes"
+	"github.com/genshinsim/gcsim/pkg/core/combat"
 	"github.com/genshinsim/gcsim/pkg/core/event"
 	"github.com/genshinsim/gcsim/pkg/core/geometry"
 	"github.com/genshinsim/gcsim/pkg/core/glog"
 	"github.com/genshinsim/gcsim/pkg/core/keys"
+	"github.com/genshinsim/gcsim/pkg/core/reactions"
 	"github.com/genshinsim/gcsim/pkg/gcs/ast"
 	"github.com/genshinsim/gcsim/pkg/shortcut"
 )
@@ -33,7 +37,7 @@ func (e *Eval) initSysFuncs(env *Env) {
 	e.addSysFunc("set_default_target", e.setDefaultTarget, env)
 	e.addSysFunc("set_particle_delay", e.setParticleDelay, env)
 	e.addSysFunc("kill_target", e.killTarget, env)
-
+	e.addSysFunc("apply_target_aura", e.applyTargetAura, env)
 	// math
 	e.addSysFunc("sin", e.sin, env)
 	e.addSysFunc("cos", e.cos, env)
@@ -380,6 +384,75 @@ func (e *Eval) setTargetPos(c *ast.CallExpr, env *Env) (Obj, error) {
 	e.Core.Combat.SetEnemyPos(idx-1, geometry.Point{X: x, Y: y})
 	e.Core.Combat.Player().SetDirectionToClosestEnemy()
 
+	return &null{}, nil
+}
+
+func (e *Eval) applyTargetAura(c *ast.CallExpr, env *Env) (Obj, error) {
+	//apply_target_elem(1,elem,amount)
+	if len(c.Args) != 3 {
+		return nil, fmt.Errorf("invalid number of params for apply_target_aura, expected 3 got %v", len(c.Args))
+	}
+
+	//all 3 param should eval to numbers
+	t, err := e.evalExpr(c.Args[0], env)
+	if err != nil {
+		return nil, err
+	}
+	n, ok := t.(*number)
+	if !ok {
+		return nil, fmt.Errorf("apply_target_aura argument target index should evaluate to a number, got %v", t.Inspect())
+	}
+	//n should be int
+	var idx int = int(n.ival)
+	if n.isFloat {
+		idx = int(n.fval)
+	}
+
+	t, err = e.evalExpr(c.Args[1], env)
+	if err != nil {
+		return nil, err
+	}
+	var elem_str string = t.Inspect()
+	var elem = attributes.NoElement
+	//n should be float
+	for i := 0; i < int(attributes.NoElement); i++ {
+		if elem_str == attributes.ElementString[i] {
+			elem = attributes.Element(i)
+		}
+	}
+	t, err = e.evalExpr(c.Args[2], env)
+	if err != nil {
+		return nil, err
+	}
+	n, ok = t.(*number)
+	if !ok {
+		return nil, fmt.Errorf("apply_target_aura argument aura amount should evaluate to a number, got %v", t.Inspect())
+	}
+	//n should be float
+	var aura float64 = n.fval
+	if !n.isFloat {
+		aura = float64(n.ival)
+	}
+
+	//check if index is in range
+	if idx < 1 || idx > e.Core.Combat.EnemyCount() {
+		return nil, fmt.Errorf("index for set_default_target is invalid, should be between %v and %v, got %v", 1, e.Core.Combat.EnemyCount(), idx)
+	}
+
+	target := e.Core.Combat.Enemies()[idx-1]
+	snap := combat.Snapshot{}
+	ai := combat.AttackInfo{
+		ActorIndex: e.Core.Player.Active(),
+		Abil:       "System Aura Attack",
+		AttackTag:  attacks.AttackTagNone,
+		ICDTag:     attacks.ICDTagNone,
+		ICDGroup:   attacks.ICDGroupDefault,
+		StrikeType: attacks.StrikeTypeDefault,
+		Element:    elem,
+		Durability: reactions.Durability(aura),
+	}
+
+	e.Core.QueueAttackWithSnap(ai, snap, combat.NewSingleTargetHit(target.Key()), 0)
 	return &null{}, nil
 }
 
