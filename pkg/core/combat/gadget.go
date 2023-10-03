@@ -20,6 +20,7 @@ const (
 	GadgetTypYueguiJumping
 	GadgetTypBaronBunny
 	GadgetTypGrinMalkinHat
+	GadgetTypSourcewaterDroplet
 	GadgetTypTest
 	EndGadgetTyp
 )
@@ -33,6 +34,7 @@ func init() {
 	gadgetLimits[GadgetTypLeaLotus] = 1
 	gadgetLimits[GadgetTypYueguiThrowing] = 2
 	gadgetLimits[GadgetTypYueguiJumping] = 3
+	gadgetLimits[GadgetTypSourcewaterDroplet] = 12
 }
 
 type Gadget interface {
@@ -46,9 +48,9 @@ func (h *Handler) RemoveGadget(key targets.TargetKey) {
 }
 
 func (h *Handler) AddGadget(t Gadget) {
-	//check for hard coded limit
+	// check for hard coded limit
 	if gadgetLimits[t.GadgetTyp()] > 0 {
-		//should kill oldest one if > limit
+		// should kill oldest one if > limit
 		f := math.MaxInt
 		oldest := -1
 		count := 0
@@ -71,7 +73,7 @@ func (h *Handler) AddGadget(t Gadget) {
 }
 
 func (h *Handler) ReplaceGadget(key targets.TargetKey, t Gadget) {
-	//do nothing if not found
+	// do nothing if not found
 	for i, v := range h.gadgets {
 		if v != nil && v.Key() == key {
 			h.gadgets[i] = t

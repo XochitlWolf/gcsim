@@ -163,7 +163,7 @@
     {
       "ability": "skill",
       "param": "travel",
-      "desc": "Projectile travel time for both the Troubleshooter Shot and After-Sales Service Rounds from when the Troubleshooter Shot hits. Default 10 frames."
+      "desc": "Projectile travel time for Troubleshooter Shot. Default 10 frames."
     },
     {
       "ability": "burst",
@@ -237,11 +237,6 @@
       "ability": "aim",
       "param": "weakspot",
       "desc": "Hit weakspot with aimed shot. Default 0 (false), 1 for true."
-    },
-    {
-      "ability": "aim",
-      "param": "bloom",
-      "desc": "Projectile travel time for Bloom from when the Frostflake Arrow hits. Default 24 frames."
     }
   ],
   "gorou": [
@@ -650,7 +645,7 @@
     {
       "ability": "skill",
       "param": "a4_delay",
-      "desc": "Number of frames until the active character picks up the Chili Pepper (A4) relative to Guoba Expiry. Default 0, minimum 0, maximum 600."
+      "desc": "Number of frames until the active character picks up the Chili Pepper (A4) relative to Guoba Expiry. A negative value indicates that it is not picked up. Default -1, maximum 600."
     }
   ],
   "wanderer": [
@@ -813,6 +808,28 @@
       "ability": "skill",
       "param": "hold_ticks",
       "desc": "Number of ticks for Hold E. Default 6, maximum 6. Only works if hold = 1."
+    }
+  ],
+  "travelerhydro": [
+    {
+      "ability": "skill",
+      "param": "hold",
+      "desc": "0 for Tap (default), 1 for Hold."
+    },
+    {
+      "ability": "skill",
+      "param": "hold_ticks",
+      "desc": "Number of ticks for Hold E. Default 22, maximum 22, minimum 0. Only works if hold = 1. If 0, then a shorter version of Tap will be performed."
+    },
+    {
+      "ability": "skill",
+      "param": "travel",
+      "desc": "Projectile travel time. Default 6 frames. Only works if hold = 1."
+    },
+    {
+      "ability": "dash",
+      "param": "pickup_droplets",
+      "desc": "Number of picked up Sourcewater Droplets. Default 0."
     }
   ]
 }

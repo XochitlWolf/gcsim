@@ -68,10 +68,19 @@ func (c *char) Init() error {
 	return nil
 }
 
-func (c *char) ActionReady(a action.Action, p map[string]int) (bool, action.ActionFailure) {
+func (c *char) ActionReady(a action.Action, p map[string]int) (bool, action.Failure) {
 	// check if it is possible to use E (in Q)
 	if a == action.ActionSkill && c.StatusIsActive(burstKey) {
 		return true, action.NoFailure
 	}
 	return c.Character.ActionReady(a, p)
+}
+
+func (c *char) Condition(fields []string) (any, error) {
+	switch fields[0] {
+	case "propSurplusStacks":
+		return c.propSurplusStacks, nil
+	default:
+		return c.Character.Condition(fields)
+	}
 }

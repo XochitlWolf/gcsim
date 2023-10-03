@@ -124,7 +124,7 @@ import (
 	_ "github.com/genshinsim/gcsim/internal/characters/yunjin"
 	_ "github.com/genshinsim/gcsim/internal/characters/zhongli"
 
-	//special cases for traveler
+	// special cases for traveler
 	_ "github.com/genshinsim/gcsim/internal/characters/traveler/anemo/aether"
 	_ "github.com/genshinsim/gcsim/internal/characters/traveler/anemo/lumine"
 	_ "github.com/genshinsim/gcsim/internal/characters/traveler/dendro/aether"
@@ -133,6 +133,8 @@ import (
 	_ "github.com/genshinsim/gcsim/internal/characters/traveler/electro/lumine"
 	_ "github.com/genshinsim/gcsim/internal/characters/traveler/geo/aether"
 	_ "github.com/genshinsim/gcsim/internal/characters/traveler/geo/lumine"
+	_ "github.com/genshinsim/gcsim/internal/characters/traveler/hydro/aether"
+	_ "github.com/genshinsim/gcsim/internal/characters/traveler/hydro/lumine"
 
 	// weapons
 	_ "github.com/genshinsim/gcsim/internal/weapons/bow/alley"

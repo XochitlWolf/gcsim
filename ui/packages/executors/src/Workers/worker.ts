@@ -17,11 +17,12 @@ function ready(req: { wasm: string }) {
     .then((result) => {
       go.run(result.instance);
       postMessage({ type: WorkerResponse.Ready });
-    }).catch((e) => {
+    })
+    .catch((e) => {
       console.error(e);
       postMessage({
         type: WorkerResponse.Failed,
-        reason: e instanceof Error ? e.message : "Unknown Error"
+        reason: e instanceof Error ? e.message : "Unknown Error",
       });
     });
 }
@@ -36,11 +37,19 @@ function initialize(req: { cfg: string }) {
 }
 
 function run(req: { itr: number }) {
-  const resp = simulate();
-  if (typeof (resp) == "string" || resp instanceof String) {
-    return { type: WorkerResponse.Failed, reason: JSON.parse(resp as string).error };
+  try {
+    const resp = simulate();
+    if (typeof resp == "string" || resp instanceof String) {
+      return {
+        type: WorkerResponse.Failed,
+        reason: JSON.parse(resp as string).error,
+      };
+    }
+    return { type: WorkerResponse.Done, result: resp, itr: req.itr };
+  } catch (e) {
+    console.log("simulate() call failed");
+    return { type: WorkerResponse.Failed, reason: `Failed with error: ${e}` };
   }
-  return { type: WorkerResponse.Done, result: resp, itr: req.itr };
 }
 
 // @ts-ignore
