@@ -41,6 +41,12 @@
         "fish",
         "amy"
     ],
+    "freminet": [],
+    "furina": [
+        "furina",
+        "furinadefontaine",
+        "clio"
+    ],
     "ganyu": [
         "yangu"
     ],
@@ -85,6 +91,10 @@
     "nahida": [
         "kusanali",
         "lesserlordkusanali"
+    ],
+    "neuvillette": [
+        "neuv",
+        "chiefjusticeoffontaine"
     ],
     "nilou": [],
     "ningguang": [
@@ -176,4 +186,4 @@
         "zhong",
         "zl"
     ]
-  }
+}

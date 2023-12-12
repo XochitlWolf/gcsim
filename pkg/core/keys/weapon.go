@@ -124,6 +124,7 @@ var weaponNames = []string{
 	"otherworldlystory",
 	"pocketgrimoire",
 	"polarstar",
+	"portablepowersaw",
 	"predator",
 	"primordialjadecutter",
 	"primordialjadewingedspear",
@@ -166,6 +167,7 @@ var weaponNames = []string{
 	"solarpearl",
 	"songofbrokenpines",
 	"songofstillness",
+	"splendoroftranquilwaters",
 	"staffofhoma",
 	"staffofthescarletsands",
 	"summitshaper",
@@ -175,6 +177,7 @@ var weaponNames = []string{
 	"thebell",
 	"theblacksword",
 	"thecatch",
+	"thedockhandsassistant",
 	"thefirstgreatmagic",
 	"theflute",
 	"thestringless",
@@ -184,6 +187,7 @@ var weaponNames = []string{
 	"thrillingtalesofdragonslayers",
 	"thunderingpulse",
 	"tidalshadow",
+	"tomeoftheeternalflow",
 	"toukaboushigure",
 	"travelershandysword",
 	"tulaytullahsremembrance",
@@ -295,6 +299,7 @@ const (
 	OtherworldlyStory
 	PocketGrimoire
 	PolarStar
+	PortablePowerSaw
 	Predator
 	PrimordialJadeCutter
 	PrimordialJadeWingedSpear
@@ -337,6 +342,7 @@ const (
 	SolarPearl
 	SongOfBrokenPines
 	SongOfStillness
+	SplendorOfTranquilWaters
 	StaffOfHoma
 	StaffOfTheScarletSands
 	SummitShaper
@@ -346,6 +352,7 @@ const (
 	TheBell
 	TheBlackSword
 	TheCatch
+	TheDockhandsAssistant
 	TheFirstGreatMagic
 	TheFlute
 	TheStringless
@@ -355,6 +362,7 @@ const (
 	ThrillingTalesOfDragonSlayers
 	ThunderingPulse
 	TidalShadow
+	TomeOfTheEternalFlow
 	ToukabouShigure
 	TravelersHandySword
 	TulaytullahsRemembrance

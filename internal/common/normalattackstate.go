@@ -115,6 +115,7 @@ func init() {
 	percentDelay5[keys.Mika] = 10
 	percentDelay5[keys.Kirara] = 13
 	percentDelay5[keys.Lyney] = 12
+	percentDelay5[keys.Furina] = 13
 
 	percentDelay5[keys.Wanderer] = 0
 	percentDelay5AltForms[keys.Wanderer] = 12
@@ -131,6 +132,7 @@ func init() {
 	percentDelay5[keys.Lisa] = 0
 	percentDelay5[keys.Mona] = 0
 	percentDelay5[keys.Klee] = 0
+	percentDelay5[keys.Neuvillette] = 0
 }
 
 func Get5PercentN0Delay(activeChar *character.CharWrapper) int {
@@ -158,6 +160,8 @@ func Get0PercentN0Delay(activeChar *character.CharWrapper) int {
 		return 6
 	case keys.Lyney:
 		return 5
+	case keys.Neuvillette:
+		return 0
 	}
 	return 0
 }
