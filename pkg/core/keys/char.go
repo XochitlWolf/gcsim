@@ -234,6 +234,7 @@ var charNames = []string{
 	"navia",
 	"wriothesley",
 	"chevreuse",
+	"navia",
 	"gaming",
 	"test_char_do_not_use",
 }
