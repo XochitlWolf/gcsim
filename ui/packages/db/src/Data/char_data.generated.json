@@ -261,6 +261,21 @@
         "burst_energy_cost": 60
       }
     },
+    "charlotte": {
+      "id": 10000088,
+      "key": "charlotte",
+      "rarity": "QUALITY_PURPLE",
+      "body": "BODY_GIRL",
+      "element": "Ice",
+      "weapon_class": "WEAPON_CATALYST",
+      "icon_name": "UI_AvatarIcon_Charlotte",
+      "skill_details": {
+        "skill": 10882,
+        "burst": 10885,
+        "attack": 10881,
+        "burst_energy_cost": 80
+      }
+    },
     "chongyun": {
       "id": 10000036,
       "key": "chongyun",
@@ -1138,6 +1153,21 @@
         "skill": 10752,
         "burst": 10755,
         "attack": 10751,
+        "burst_energy_cost": 60
+      }
+    },
+    "wriothesley": {
+      "id": 10000086,
+      "key": "wriothesley",
+      "rarity": "QUALITY_ORANGE",
+      "body": "BODY_MALE",
+      "element": "Ice",
+      "weapon_class": "WEAPON_CATALYST",
+      "icon_name": "UI_AvatarIcon_Wriothesley",
+      "skill_details": {
+        "skill": 10862,
+        "burst": 10865,
+        "attack": 10861,
         "burst_energy_cost": 60
       }
     },
