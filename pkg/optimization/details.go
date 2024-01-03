@@ -323,8 +323,9 @@ func (stats *SubstatOptimizerDetails) findOptimalERforChars() {
 		// fmt.Printf("Found character %s needs %.2f ER\n", stats.charProfilesERBaseline[idxChar].Base.Key.String(), *result.Statistics.ErNeeded[idxChar].Q3)
 
 		// erDiff is the amount of excess ER we have
-		length := len(result.Statistics.WeightedEr[idxChar].Array)
-		erDiff := result.Statistics.WeightedEr[idxChar].Array[int(float64(length)*0.2)] - result.Statistics.ErNeeded[idxChar].Array[int(float64(length)*93)]
+		w_len := len(result.Statistics.WeightedEr[idxChar].Array)
+		er_len := len(result.Statistics.ErNeeded[idxChar].Array)
+		erDiff := result.Statistics.WeightedEr[idxChar].Array[int(float64(w_len)*0.2)] - result.Statistics.ErNeeded[idxChar].Array[int(float64(er_len)*0.93)]
 
 		// the bias is how much to "round".
 		// -0.5 bias is equivalent to flooring (guaruntees that the ER will be enough, even if
@@ -337,7 +338,7 @@ func (stats *SubstatOptimizerDetails) findOptimalERforChars() {
 		erStack := int(math.Round(erDiff/stats.substatValues[attributes.ER] + bias))
 		erStack = clamp[int](0, erStack, stats.charSubstatFinal[idxChar][attributes.ER])
 		stats.charMaxExtraERSubs[idxChar] =
-			float64(erStack) - (result.Statistics.WeightedEr[idxChar].Array[0]-result.Statistics.ErNeeded[idxChar].Array[length-1])/
+			float64(erStack) - (result.Statistics.WeightedEr[idxChar].Array[0]-result.Statistics.ErNeeded[idxChar].Array[er_len-1])/
 				stats.substatValues[attributes.ER]
 		stats.charProfilesCopy[idxChar] = stats.charProfilesERBaseline[idxChar].Clone()
 		stats.charSubstatFinal[idxChar][attributes.ER] -= erStack
