@@ -1,8 +1,7 @@
 {
     "albedo": [],
     "alhaitham": [
-        "haitham",
-        "dendrokeqing"
+        "haitham"
     ],
     "aloy": [],
     "amber": [],
@@ -10,40 +9,36 @@
         "aratakiitto",
         "aratakitheoneandoniitto"
     ],
-    "baizhu": [
-        "discountorochimaru"
-    ],
+    "baizhu": [],
     "barbara": [
         "barb"
     ],
     "beidou": [],
     "bennett": [],
     "candace": [],
+    "charlotte": [],
     "chongyun": [
         "chong"
     ],
     "collei": [],
-    "cyno": [
-        "razorrework"
-    ],
-    "dehya": [
-        "xinyansidegrade"
-    ],
+    "cyno": [],
+    "dehya": [],
     "diluc": [],
     "diona": [],
     "dori": [],
     "eula": [],
     "faruzan": [
-        "faru",
-        "hatsunemiku"
+        "faru"
     ],
     "fischl": [
         "fish",
         "amy"
     ],
-    "ganyu": [
-        "yangu"
+    "freminet": [],
+    "furina": [
+        "furinadefontaine"
     ],
+    "ganyu": [],
     "gorou": [],
     "hutao": [
         "tao",
@@ -74,9 +69,7 @@
         "kujousara",
         "kujosara"
     ],
-    "layla": [
-        "dionarework"
-    ],
+    "layla": [],
     "lisa": [],
     "lynette": [],
     "lyney": [],
@@ -85,6 +78,14 @@
     "nahida": [
         "kusanali",
         "lesserlordkusanali"
+    ],
+    "navia": [
+        "navia",
+        "demoiselle"
+    ],
+    "neuvillette": [
+        "neuv",
+        "chiefjusticeoffontaine"
     ],
     "nilou": [],
     "ningguang": [
@@ -151,8 +152,10 @@
         "scara",
         "kunikuzushi",
         "kuni",
-        "kabukimono",
-        "belial"
+        "kabukimono"
+    ],
+    "wriothesley": [
+        "wrio"
     ],
     "xiangling": [
         "xl"
@@ -176,4 +179,4 @@
         "zhong",
         "zl"
     ]
-  }
+}

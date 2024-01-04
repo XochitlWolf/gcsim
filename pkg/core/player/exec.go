@@ -183,7 +183,7 @@ func (h *Handler) Exec(t action.Action, k keys.Char, param map[string]int) error
 		h.Log.NewEventBuildMsg(glog.LogActionEvent, h.active, "swapping ", h.chars[h.active].Base.Key.String(), " to ", h.chars[h.charPos[k]].Base.Key.String())
 
 		x := action.Info{
-			Frames: func(next action.Action) int {
+			Frames: func(action.Action) int {
 				return h.Delays.Swap
 			},
 			AnimationLength: h.Delays.Swap,
@@ -191,7 +191,6 @@ func (h *Handler) Exec(t action.Action, k keys.Char, param map[string]int) error
 			State:           action.SwapState,
 		}
 		x.QueueAction(h.swap(k), h.Delays.Swap)
-		x.CacheFrames()
 		h.SetActionUsed(h.active, t, &x)
 		h.LastAction.Type = t
 		h.LastAction.Param = param
@@ -236,7 +235,6 @@ func (h *Handler) useAbility(
 	if err != nil {
 		return err
 	}
-	info.CacheFrames()
 	h.SetActionUsed(h.active, t, &info)
 	if info.FramePausedOnHitlag == nil {
 		info.FramePausedOnHitlag = h.ActiveChar().FramePausedOnHitlag
@@ -250,6 +248,9 @@ func (h *Handler) useAbility(
 		glog.LogActionEvent,
 		h.active,
 		"executed ", t.String(),
-	).Write("action", t.String())
+	).
+		Write("action", t.String()).
+		Write("stam_post", h.Stam).
+		Write("swap_cd_post", h.SwapCD)
 	return nil
 }

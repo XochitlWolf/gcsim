@@ -201,18 +201,22 @@ func (c *char) ChargeAttack(p map[string]int) (action.Info, error) {
 
 	switch c.slashState {
 	case SaichiSlash:
+		ai.PoiseDMG = 120
 		ai.Mult = saichiSlash[c.TalentLvlAttack()]
 	case LeftSlash, RightSlash:
+		ai.PoiseDMG = 81.7
 		ai.Mult = akCombo[c.TalentLvlAttack()]
 		haltFrames := 0.03 // consumed stacks >= 3
 		switch c.stacksConsumed {
 		case 0:
+			ai.PoiseDMG = 143.4
 			haltFrames = 0.07
 		case 1:
 			haltFrames = 0.05
 		}
 		ai.HitlagHaltFrames = haltFrames * 60
 	case FinalSlash:
+		ai.PoiseDMG = 143.4
 		ai.Mult = akFinal[c.TalentLvlAttack()]
 	}
 
@@ -254,13 +258,14 @@ func (c *char) ChargeAttack(p map[string]int) (action.Info, error) {
 	// required for the frames func
 	curSlash := c.slashState
 	c.c6Proc = c.Base.Cons >= 6 && c.Core.Rand.Float64() < 0.5
-	nextSlash := curSlash.Next(c.Tags[strStackKey], c.c6Proc)
+	atkspd := c.Stat(attributes.AtkSpd)
 
 	return action.Info{
 		Frames: func(next action.Action) int {
 			f := chargeFrames[curSlash][next]
 
 			if next == action.ActionCharge {
+				nextSlash := curSlash.Next(c.Tags[strStackKey], c.c6Proc)
 				switch nextSlash {
 				// handle CA1/CA2 -> CAF frames
 				case FinalSlash:
@@ -278,7 +283,7 @@ func (c *char) ChargeAttack(p map[string]int) (action.Info, error) {
 				}
 			}
 
-			return frames.AtkSpdAdjust(f-windup, c.Stat(attributes.AtkSpd))
+			return frames.AtkSpdAdjust(f-windup, atkspd)
 		},
 		AnimationLength: chargeFrames[curSlash][action.InvalidAction] - windup,
 		CanQueueAfter:   chargeHitmarks[curSlash] - windup,

@@ -2,7 +2,6 @@ package geometry
 
 import (
 	"fmt"
-	"math"
 )
 
 // center = true center of rect
@@ -96,6 +95,7 @@ func (r *Rectangle) String() string {
 
 func (r *Rectangle) PointInShape(p Point) bool {
 	// set origin to rectangle center by shifting point
+	// effectively makes rectangle center X:0, Y:0
 	relative := p.Sub(r.center)
 
 	// take direction from rectangle and rotate point in the opposite direction to remove rectangle rotation
@@ -106,11 +106,11 @@ func (r *Rectangle) PointInShape(p Point) bool {
 	checkX := local.X
 	checkY := local.Y
 
-	bottomLeft := Point{X: -r.w / 2, Y: -r.h / 2}.Add(r.center)
+	bottomLeft := Point{X: -r.w / 2, Y: -r.h / 2}
 	minX := bottomLeft.X
 	minY := bottomLeft.Y
 
-	topRight := Point{X: r.w / 2, Y: r.h / 2}.Add(r.center)
+	topRight := Point{X: r.w / 2, Y: r.h / 2}
 	maxX := topRight.X
 	maxY := topRight.Y
 
@@ -177,7 +177,7 @@ type Projection struct {
 
 // https://stackoverflow.com/questions/64745139/check-if-two-integer-ranges-overlap
 func (p1 *Projection) overlap(p2 Projection) bool {
-	return math.Max(p1.min, p2.min) <= math.Min(p1.max, p2.max)
+	return max(p1.min, p2.min) <= min(p1.max, p2.max)
 }
 
 func getProjection(corners []Point, axis Point) Projection {

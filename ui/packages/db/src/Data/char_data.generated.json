@@ -261,6 +261,21 @@
         "burst_energy_cost": 60
       }
     },
+    "charlotte": {
+      "id": 10000088,
+      "key": "charlotte",
+      "rarity": "QUALITY_PURPLE",
+      "body": "BODY_GIRL",
+      "element": "Ice",
+      "weapon_class": "WEAPON_CATALYST",
+      "icon_name": "UI_AvatarIcon_Charlotte",
+      "skill_details": {
+        "skill": 10882,
+        "burst": 10885,
+        "attack": 10881,
+        "burst_energy_cost": 80
+      }
+    },
     "chongyun": {
       "id": 10000036,
       "key": "chongyun",
@@ -418,6 +433,36 @@
         "skill": 10312,
         "burst": 10313,
         "attack": 10311,
+        "burst_energy_cost": 60
+      }
+    },
+    "freminet": {
+      "id": 10000085,
+      "key": "freminet",
+      "rarity": "QUALITY_PURPLE",
+      "body": "BODY_BOY",
+      "element": "Ice",
+      "weapon_class": "WEAPON_CLAYMORE",
+      "icon_name": "UI_AvatarIcon_Freminet",
+      "skill_details": {
+        "skill": 10852,
+        "burst": 10855,
+        "attack": 10851,
+        "burst_energy_cost": 60
+      }
+    },
+    "furina": {
+      "id": 10000089,
+      "key": "furina",
+      "rarity": "QUALITY_ORANGE",
+      "body": "BODY_GIRL",
+      "element": "Water",
+      "weapon_class": "WEAPON_SWORD_ONE_HAND",
+      "icon_name": "UI_AvatarIcon_Furina",
+      "skill_details": {
+        "skill": 10892,
+        "burst": 10895,
+        "attack": 10891,
         "burst_energy_cost": 60
       }
     },
@@ -745,6 +790,23 @@
         "burst_energy_cost": 60
       }
     },
+    "luminehydro": {
+      "id": 10000007,
+      "sub_id": 703,
+      "key": "luminehydro",
+      "rarity": "QUALITY_ORANGE",
+      "body": "BODY_GIRL",
+      "region": "ASSOC_TYPE_MAINACTOR",
+      "element": "Water",
+      "weapon_class": "WEAPON_SWORD_ONE_HAND",
+      "icon_name": "UI_AvatarIcon_PlayerGirl",
+      "skill_details": {
+        "skill": 10087,
+        "burst": 10088,
+        "attack": 100552,
+        "burst_energy_cost": 80
+      }
+    },
     "lynette": {
       "id": 10000083,
       "key": "lynette",
@@ -773,23 +835,6 @@
         "burst": 10845,
         "attack": 10841,
         "burst_energy_cost": 60
-      }
-    },
-    "luminehydro": {
-      "id": 10000007,
-      "sub_id": 703,
-      "key": "luminehydro",
-      "rarity": "QUALITY_ORANGE",
-      "body": "BODY_GIRL",
-      "region": "ASSOC_TYPE_MAINACTOR",
-      "element": "Water",
-      "weapon_class": "WEAPON_SWORD_ONE_HAND",
-      "icon_name": "UI_AvatarIcon_PlayerGirl",
-      "skill_details": {
-        "skill": 10087,
-        "burst": 10088,
-        "attack": 100552,
-        "burst_energy_cost": 80
       }
     },
     "mika": {
@@ -838,6 +883,36 @@
         "burst": 10735,
         "attack": 10731,
         "burst_energy_cost": 50
+      }
+    },
+    "navia": {
+      "id": 10000091,
+      "key": "navia",
+      "rarity": "QUALITY_ORANGE",
+      "body": "BODY_LADY",
+      "element": "Rock",
+      "weapon_class": "WEAPON_CLAYMORE",
+      "icon_name": "UI_AvatarIcon_Navia",
+      "skill_details": {
+        "skill": 10912,
+        "burst": 10915,
+        "attack": 10911,
+        "burst_energy_cost": 60
+      }
+    },
+    "neuvillette": {
+      "id": 10000087,
+      "key": "neuvillette",
+      "rarity": "QUALITY_ORANGE",
+      "body": "BODY_MALE",
+      "element": "Water",
+      "weapon_class": "WEAPON_CATALYST",
+      "icon_name": "UI_AvatarIcon_Neuvillette",
+      "skill_details": {
+        "skill": 10872,
+        "burst": 10875,
+        "attack": 10871,
+        "burst_energy_cost": 70
       }
     },
     "nilou": {
@@ -1093,6 +1168,21 @@
         "skill": 10752,
         "burst": 10755,
         "attack": 10751,
+        "burst_energy_cost": 60
+      }
+    },
+    "wriothesley": {
+      "id": 10000086,
+      "key": "wriothesley",
+      "rarity": "QUALITY_ORANGE",
+      "body": "BODY_MALE",
+      "element": "Ice",
+      "weapon_class": "WEAPON_CATALYST",
+      "icon_name": "UI_AvatarIcon_Wriothesley",
+      "skill_details": {
+        "skill": 10862,
+        "burst": 10865,
+        "attack": 10861,
         "burst_energy_cost": 60
       }
     },

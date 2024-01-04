@@ -115,6 +115,13 @@
       "desc": "0 for no A1 (default), non-zero value for A1. This sets hold to 1."
     }
   ],
+  "charlotte": [
+    {
+      "ability": "skill",
+      "param": "hold",
+      "desc": "0 for Tap (default), value between 1 and 809 for Hold. The number determines the E duration in frames."
+    }
+  ],
   "collei": [
     {
       "ability": "attack",
@@ -462,6 +469,13 @@
       "ability": "skill",
       "param": "hold",
       "desc": "0 for Tap (default), value between 1 and 300 for Hold. The number is added to the minimum holding frames for Tap to turn into Hold (16)."
+    }
+  ],
+  "navia": [
+    {
+      "ability": "skill",
+      "param": "hold",
+      "desc": "0 for Tap (default), value between 1 and 241 for Hold. The number is added to the minimum holding frames for Tap to turn into Hold (41), subtracted by 1 to account for requiring a 1 to activate."
     }
   ],
   "nilou": [
@@ -830,6 +844,18 @@
       "ability": "dash",
       "param": "pickup_droplets",
       "desc": "Number of picked up Sourcewater Droplets. Default 0."
+    }
+  ],
+  "neuvillette": [
+    {
+      "ability": "charge",
+      "param": "short",
+      "desc": "0 for Charged Attack: Equitable Judgment (default), 1 for Charged Attack. Charged Attack will still absorb droplets if possible. This mirrors in game behaviour."
+    },
+    {
+      "ability": "charge",
+      "param": "ticks",
+      "desc": "Number of ticks for Charged Attack: Equitable Judgment. Default is maximum number of ticks, minimum 1. Only works if short = 0. If the number of ticks is not the maximum, the next action must be Burst, Skill, Dash, or Jump."
     }
   ]
 }

@@ -55,7 +55,7 @@ func init() {
 	percentDelay5[keys.LumineGeo] = 7
 	percentDelay5[keys.LumineHydro] = 7
 	percentDelay5[keys.LuminePyro] = 7
-
+	percentDelay5[keys.Navia] = 19
 	percentDelay5[keys.Nilou] = 11
 	// I didn't test Nilou E stance, assuming it's the same values for now
 
@@ -115,6 +115,7 @@ func init() {
 	percentDelay5[keys.Mika] = 10
 	percentDelay5[keys.Kirara] = 13
 	percentDelay5[keys.Lyney] = 12
+	percentDelay5[keys.Furina] = 13
 
 	percentDelay5[keys.Wanderer] = 0
 	percentDelay5AltForms[keys.Wanderer] = 12
@@ -131,6 +132,9 @@ func init() {
 	percentDelay5[keys.Lisa] = 0
 	percentDelay5[keys.Mona] = 0
 	percentDelay5[keys.Klee] = 0
+	percentDelay5[keys.Neuvillette] = 0
+	percentDelay5[keys.Charlotte] = 6
+	percentDelay5[keys.Wriothesley] = 12
 }
 
 func Get5PercentN0Delay(activeChar *character.CharWrapper) int {
@@ -158,6 +162,14 @@ func Get0PercentN0Delay(activeChar *character.CharWrapper) int {
 		return 6
 	case keys.Lyney:
 		return 5
+	case keys.Neuvillette:
+		return 0
+	case keys.Navia:
+		return 19
+	case keys.Charlotte:
+		return 4
+	case keys.Wriothesley:
+		return 4
 	}
 	return 0
 }

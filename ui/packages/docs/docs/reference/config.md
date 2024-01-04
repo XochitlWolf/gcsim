@@ -23,6 +23,7 @@ options iteration=1000 duration=90 swap_delay=14;
 | `workers` | Number of workers to use. Only valid when using cli, ignored in web. | 20 |
 | `hitlag` | Whether hitlag should be enabled. See the [hitlag page](/mechanics/hitlag) for more details. | true |
 | `defhalt` | Whether to enable `canBeDefenseHalt` for hitlag. See the [hitlag page](/mechanics/hitlag) for more details. | true |
+| `ignore_burst_energy` | Bursts can be used without being at full energy. This will make .char.burst.ready only check for cooldowns. Energy levels for other effects will still work as usual. Enabling this setting will cause a warning to appear on the results page indicating that this setting was active. | false |
 
 ### Set energy generation
 
@@ -101,15 +102,28 @@ An optional param flag may be added to the character/weapon/artifact set via the
 
 | name | description | default |
 | --- | --- | --- |
-| `start_hp` | Set the character's starting hp. | Character's max hp. |
+| `start_hp` | Set the character's starting hp. | -1 (Character's max hp). |
+| `start_hp%` | Set the character's starting hp ratio. | -1 (Character's max hp). Values should be 1 <= `start_hp%` <= 100. |
 | `start_energy` | Set the character's starting energy. | Character's max energy. |
+
+:::info
+Some details about `start_hp` and `start_hp%`:
+- a value <= 0 for both (manually supplied or by omission) will mean that the character's hp is set to max
+- `start_hp%` can only be set as a percentage without decimal places, so 50 or 49 but not 49.5.
+- the two params work additively so supplying both with a value > 0 will add them together
+
+Example:
+- `start_hp` is 10
+- `start_hp%` is 49
+- the sim will set the character's starting hp to be 49% of max hp + 10 flat hp
+:::
 
 :::info
 Example: 
 ```
-bennett char lvl=70/80 cons=2 talent=6,8,8 +params=[start_hp=10,start_energy=20];
+bennett char lvl=70/80 cons=2 talent=6,8,8 +params=[start_hp=10,start_hp%=49,start_energy=20];
 ```
-This will set Bennett's starting hp to 10 and starting energy to 20.
+This will set Bennett's starting hp to 49% + 10 and starting energy to 20.
 :::
 
 :::caution
@@ -133,8 +147,9 @@ target lvl=88 resist=0.1 pos=0,0 radius=2 freeze_resist=0.8 hp=9999 particle_thr
 | `radius` | The radius of the enemy's circle [hurtbox](https://en.wiktionary.org/wiki/hurtbox) in meters. | 1 |
 | `freeze_resist` | How much freeze resistance the enemy has. `0` means no freeze resistance, `1` means immune to being frozen. The reaction still happens though. | 0 |
 | `hp` | HP of the enemy. If this is set, duration in the sim options will be ignored and the sim will run until all enemies have died. If `hp` is set for at least one enemy, then it has to be set for all enemies. | - |
-| `particle_threshold` | Only available if the `hp` is set. Determines after how much damage the enemy drops clear elemental particles. Example: If the enemy has 500 HP and this is set to 200, then the enemy will drop particles at 300 and 100 HP. | - |
-| `particle_drop_count` | Only available if the `hp` is set. Number of clear elemental particles to drop at `particle_threshold`. | - |
+| `particle_threshold` | Only available if the `hp` is set. Determines after how much damage the enemy drops elemental particles. Example: If the enemy has 500 HP and this is set to 200, then the enemy will drop particles at 300 and 100 HP. | - |
+| `particle_drop_count` | Only available if the `hp` is set. Number of elemental particles to drop at `particle_threshold`. | - |
+| `particle_element` | Only available if the `hp` is set. Element of the particle at `particle_threshold`. Defaults to clear if not set. | - |
 
 :::danger
 All configs must have at least one enemy specified. Otherwise you will get an error. 

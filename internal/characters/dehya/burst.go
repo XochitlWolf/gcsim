@@ -10,15 +10,14 @@ import (
 	"github.com/genshinsim/gcsim/pkg/core/glog"
 )
 
-var burstFrames []int
-var kickFrames []int
-var remainingFieldDur int
-
 const burstKey = "dehya-burst"
 const kickKey = "dehya-burst-kick"
 const burstDoT1Hitmark = 105
 const kickHitmark = 46 // 6 hits minimum
-var punchSlowHitmark = 43
+const punchSlowHitmark = 43
+
+var burstFrames []int
+var kickFrames []int
 var punchHitmarks = []int{30, 30, 28, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27}
 
 func init() {
@@ -34,14 +33,15 @@ func init() {
 }
 
 func (c *char) Burst(p map[string]int) (action.Info, error) {
-	burstIsJumpCancelled = false
+	c.burstJumpCancel = false
 	ai := combat.AttackInfo{
 		ActorIndex: c.Index,
 		Abil:       "Flame-Mane's Fist",
 		AttackTag:  attacks.AttackTagElementalBurst,
 		ICDTag:     attacks.ICDTagElementalBurst,
 		ICDGroup:   attacks.ICDGroupDefault,
-		StrikeType: attacks.StrikeTypeDefault,
+		StrikeType: attacks.StrikeTypeBlunt,
+		PoiseDMG:   50,
 		Element:    attributes.Pyro,
 		Durability: 25,
 		Mult:       burstPunchAtk[c.TalentLvlBurst()],
@@ -49,12 +49,12 @@ func (c *char) Burst(p map[string]int) (action.Info, error) {
 	}
 
 	c.c6count = 0
-	remainingFieldDur = 0
+	c.sanctumSavedDur = 0
 	if c.StatusIsActive(dehyaFieldKey) {
 		// pick up field at start
-		remainingFieldDur = c.StatusExpiry(dehyaFieldKey) + sanctumPickupExtension - c.Core.F // dur gets extended on field recast by a low margin, apparently
+		c.sanctumSavedDur = c.StatusExpiry(dehyaFieldKey) + sanctumPickupExtension - c.Core.F // dur gets extended on field recast by a low margin, apparently
 		c.Core.Log.NewEvent("sanctum removed", glog.LogCharacterEvent, c.Index).
-			Write("Duration Remaining ", remainingFieldDur+sanctumPickupExtension).
+			Write("Duration Remaining ", c.sanctumSavedDur+sanctumPickupExtension).
 			Write("DoT tick CD", c.StatusDuration(skillICDKey))
 		c.DeleteStatus(dehyaFieldKey)
 	}
@@ -99,7 +99,8 @@ func (c *char) burstPunch(src int, auto bool) action.Info {
 		AttackTag:  attacks.AttackTagElementalBurst,
 		ICDTag:     attacks.ICDTagElementalBurst,
 		ICDGroup:   attacks.ICDGroupDefault,
-		StrikeType: attacks.StrikeTypeDefault,
+		StrikeType: attacks.StrikeTypeBlunt,
+		PoiseDMG:   50,
 		Element:    attributes.Pyro,
 		Durability: 25,
 		Mult:       burstPunchAtk[c.TalentLvlBurst()],
@@ -113,7 +114,7 @@ func (c *char) burstPunch(src int, auto bool) action.Info {
 		if c.Core.Player.Active() != c.Index {
 			return
 		}
-		if burstIsJumpCancelled { // prevent punches if you jump cancel burst
+		if c.burstJumpCancel { // prevent punches if you jump cancel burst
 			return
 		}
 		c.Core.QueueAttack(
@@ -135,18 +136,11 @@ func (c *char) burstPunch(src int, auto bool) action.Info {
 		c.burstHitSrc++
 		c.burstPunch(c.burstHitSrc, true)
 	}, hitmark)
-	if auto {
-		return action.Info{
-			Frames:          func(action.Action) int { return punchSlowHitmark },
-			AnimationLength: punchSlowHitmark,
-			CanQueueAfter:   punchSlowHitmark,
-			State:           action.BurstState,
-		}
-	}
+
 	return action.Info{
-		Frames:          func(action.Action) int { return punchHitmarks[c.burstCounter] },
-		AnimationLength: punchHitmarks[c.burstCounter],
-		CanQueueAfter:   punchHitmarks[c.burstCounter],
+		Frames:          func(action.Action) int { return hitmark },
+		AnimationLength: hitmark,
+		CanQueueAfter:   hitmark,
 		State:           action.BurstState,
 	}
 }
@@ -158,7 +152,8 @@ func (c *char) burstKick(src int) action.Info {
 		AttackTag:  attacks.AttackTagElementalBurst,
 		ICDTag:     attacks.ICDTagNone,
 		ICDGroup:   attacks.ICDGroupDefault,
-		StrikeType: attacks.StrikeTypeDefault,
+		StrikeType: attacks.StrikeTypeBlunt,
+		PoiseDMG:   100,
 		Element:    attributes.Pyro,
 		Durability: 25,
 		Mult:       burstKickAtk[c.TalentLvlBurst()],
@@ -179,8 +174,9 @@ func (c *char) burstKick(src int) action.Info {
 			0,
 			c.c4cb(),
 		)
-		if remainingFieldDur > 0 {
-			c.addField(remainingFieldDur)
+		if dur := c.sanctumSavedDur; dur > 0 { // place field
+			c.sanctumSavedDur = 0
+			c.addField(dur)
 		}
 	}, kickHitmark)
 

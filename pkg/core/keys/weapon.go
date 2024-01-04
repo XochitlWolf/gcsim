@@ -41,6 +41,7 @@ var weaponNames = []string{
 	"aquasimulacra",
 	"aquilafavonia",
 	"athousandfloatingdreams",
+	"balladoftheboundlessblue",
 	"balladofthefjords",
 	"beaconofthereedsea",
 	"beginnersprotector",
@@ -52,6 +53,7 @@ var weaponNames = []string{
 	"blacktassel",
 	"bloodtaintedgreatsword",
 	"calamityqueller",
+	"cashflowsupervision",
 	"cinnabarspindle",
 	"compoundbow",
 	"coolsteel",
@@ -124,15 +126,18 @@ var weaponNames = []string{
 	"otherworldlystory",
 	"pocketgrimoire",
 	"polarstar",
+	"portablepowersaw",
 	"predator",
 	"primordialjadecutter",
 	"primordialjadewingedspear",
+	"prospectorsdrill",
 	"prototypeamber",
 	"prototypearchaic",
 	"prototypecrescent",
 	"prototyperancour",
 	"prototypestarglitter",
 	"rainslasher",
+	"rangegauge",
 	"ravenbow",
 	"recurvebow",
 	"redhornstonethresher",
@@ -166,15 +171,18 @@ var weaponNames = []string{
 	"solarpearl",
 	"songofbrokenpines",
 	"songofstillness",
+	"splendoroftranquilwaters",
 	"staffofhoma",
 	"staffofthescarletsands",
 	"summitshaper",
 	"swordofdescension",
+	"swordofnarzissenkreuz",
 	"talkingstick",
 	"thealleyflash",
 	"thebell",
 	"theblacksword",
 	"thecatch",
+	"thedockhandsassistant",
 	"thefirstgreatmagic",
 	"theflute",
 	"thestringless",
@@ -184,10 +192,13 @@ var weaponNames = []string{
 	"thrillingtalesofdragonslayers",
 	"thunderingpulse",
 	"tidalshadow",
+	"tomeoftheeternalflow",
 	"toukaboushigure",
 	"travelershandysword",
 	"tulaytullahsremembrance",
 	"twinnephrite",
+	"ultimateoverlordsmegamagicsword",
+	"verdict",
 	"vortexvanquisher",
 	"wanderingevenstar",
 	"wastergreatsword",
@@ -212,6 +223,7 @@ const (
 	AquaSimulacra
 	AquilaFavonia
 	AThousandFloatingDreams
+	BalladOfTheBoundlessBlue
 	BalladOfTheFjords
 	BeaconOfTheReedSea
 	BeginnersProtector
@@ -223,6 +235,7 @@ const (
 	BlackTassel
 	BloodtaintedGreatsword
 	CalamityQueller
+	CashflowSupervision
 	CinnabarSpindle
 	CompoundBow
 	CoolSteel
@@ -295,15 +308,18 @@ const (
 	OtherworldlyStory
 	PocketGrimoire
 	PolarStar
+	PortablePowerSaw
 	Predator
 	PrimordialJadeCutter
 	PrimordialJadeWingedSpear
+	ProspectorsDrill
 	PrototypeAmber
 	PrototypeArchaic
 	PrototypeCrescent
 	PrototypeRancour
 	PrototypeStarglitter
 	Rainslasher
+	RangeGauge
 	RavenBow
 	RecurveBow
 	RedhornStonethresher
@@ -337,15 +353,18 @@ const (
 	SolarPearl
 	SongOfBrokenPines
 	SongOfStillness
+	SplendorOfTranquilWaters
 	StaffOfHoma
 	StaffOfTheScarletSands
 	SummitShaper
 	SwordOfDescension
+	SwordOfNarzissenkreuz
 	TalkingStick
 	TheAlleyFlash
 	TheBell
 	TheBlackSword
 	TheCatch
+	TheDockhandsAssistant
 	TheFirstGreatMagic
 	TheFlute
 	TheStringless
@@ -355,10 +374,13 @@ const (
 	ThrillingTalesOfDragonSlayers
 	ThunderingPulse
 	TidalShadow
+	TomeOfTheEternalFlow
 	ToukabouShigure
 	TravelersHandySword
 	TulaytullahsRemembrance
 	TwinNephrite
+	UltimateOverlordsMegaMagicSword
+	Verdict
 	VortexVanquisher
 	WanderingEvenstar
 	WasterGreatsword
