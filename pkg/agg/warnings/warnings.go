@@ -10,7 +10,10 @@ import (
 )
 
 func init() {
-	agg.Register(NewAgg)
+	agg.Register(agg.Config{
+		Name: "warnings",
+		New:  NewAgg,
+	})
 }
 
 type buffer struct {
@@ -36,8 +39,8 @@ func NewAgg(cfg *info.ActionList) (agg.Aggregator, error) {
 func (b *buffer) Add(result stats.Result) {
 	var energy, stamina, swap, skill, dash float64
 
-	for _, c := range result.Characters {
-		for _, fail := range c.FailedActions {
+	for i := range result.Characters {
+		for _, fail := range result.Characters[i].FailedActions {
 			switch fail.Reason {
 			case action.InsufficientEnergy.String():
 				energy += float64(fail.End-fail.Start) / 60
@@ -64,7 +67,7 @@ func (b *buffer) Add(result stats.Result) {
 func (b *buffer) Flush(result *model.SimulationStatistics) {
 	result.Warnings = &model.Warnings{
 		TargetOverlap:       b.overlap,
-		InsufficientEnergy:  b.energy.StdDev() >= 1.0,
+		InsufficientEnergy:  b.energy.Mean() >= 1.0,
 		InsufficientStamina: b.stamina.Mean() >= 1.0,
 		SwapCd:              b.swap.Mean() >= 1.0,
 		SkillCd:             b.skill.Mean() >= 1.0,

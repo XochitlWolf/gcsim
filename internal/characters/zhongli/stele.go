@@ -14,7 +14,7 @@ const particleICDKey = "zhongli-particle-icd"
 
 func (c *char) newStele(dur int) {
 	flat := c.a4Skill()
-	//deal damage when created
+	// deal damage when created
 	ai := combat.AttackInfo{
 		ActorIndex: c.Index,
 		Abil:       "Stone Stele (Initial)",
@@ -22,6 +22,7 @@ func (c *char) newStele(dur int) {
 		ICDTag:     attacks.ICDTagElementalArt,
 		ICDGroup:   attacks.ICDGroupDefault,
 		StrikeType: attacks.StrikeTypeBlunt,
+		PoiseDMG:   200,
 		Element:    attributes.Geo,
 		Durability: 50,
 		Mult:       skill[c.TalentLvlSkill()],
@@ -31,7 +32,7 @@ func (c *char) newStele(dur int) {
 	stelePos := geometry.CalcOffsetPoint(c.Core.Combat.Player().Pos(), geometry.Point{Y: 3}, steleDir)
 	c.Core.QueueAttack(ai, combat.NewCircleHitOnTarget(stelePos, nil, 2), 0, 0, c.particleCB())
 
-	//create a construct
+	// create a construct
 	con := &stoneStele{
 		src:    c.Core.F,
 		expiry: c.Core.F + dur,
@@ -63,6 +64,7 @@ func (c *char) newStele(dur int) {
 		ICDTag:     attacks.ICDTagElementalArt,
 		ICDGroup:   attacks.ICDGroupDefault,
 		StrikeType: attacks.StrikeTypeBlunt,
+		PoiseDMG:   0,
 		Element:    attributes.Geo,
 		Durability: 25,
 		Mult:       skillTick[c.TalentLvlSkill()],

@@ -56,6 +56,13 @@
       "weapon_class": "WEAPON_CATALYST",
       "image_name": "UI_EquipIcon_Catalyst_Ayus"
     },
+    "balladoftheboundlessblue": {
+      "id": 14426,
+      "key": "balladoftheboundlessblue",
+      "rarity": 4,
+      "weapon_class": "WEAPON_CATALYST",
+      "image_name": "UI_EquipIcon_Catalyst_DandelionPoem"
+    },
     "balladofthefjords": {
       "id": 13424,
       "key": "balladofthefjords",
@@ -132,6 +139,13 @@
       "rarity": 5,
       "weapon_class": "WEAPON_POLE",
       "image_name": "UI_EquipIcon_Pole_Santika"
+    },
+    "cashflowsupervision": {
+      "id": 14513,
+      "key": "cashflowsupervision",
+      "rarity": 5,
+      "weapon_class": "WEAPON_CATALYST",
+      "image_name": "UI_EquipIcon_Catalyst_Wheatley"
     },
     "cinnabarspindle": {
       "id": 11415,
@@ -637,6 +651,13 @@
       "weapon_class": "WEAPON_BOW",
       "image_name": "UI_EquipIcon_Bow_Worldbane"
     },
+    "portablepowersaw": {
+      "id": 12427,
+      "key": "portablepowersaw",
+      "rarity": 4,
+      "weapon_class": "WEAPON_CLAYMORE",
+      "image_name": "UI_EquipIcon_Claymore_Mechanic"
+    },
     "predator": {
       "id": 15415,
       "key": "predator",
@@ -657,6 +678,13 @@
       "rarity": 5,
       "weapon_class": "WEAPON_POLE",
       "image_name": "UI_EquipIcon_Pole_Morax"
+    },
+    "prospectorsdrill": {
+      "id": 13427,
+      "key": "prospectorsdrill",
+      "rarity": 4,
+      "weapon_class": "WEAPON_POLE",
+      "image_name": "UI_EquipIcon_Pole_Mechanic"
     },
     "prototypeamber": {
       "id": 14406,
@@ -699,6 +727,13 @@
       "rarity": 4,
       "weapon_class": "WEAPON_CLAYMORE",
       "image_name": "UI_EquipIcon_Claymore_Perdue"
+    },
+    "rangegauge": {
+      "id": 15427,
+      "key": "rangegauge",
+      "rarity": 4,
+      "weapon_class": "WEAPON_BOW",
+      "image_name": "UI_EquipIcon_Bow_Mechanic"
     },
     "ravenbow": {
       "id": 15301,
@@ -931,6 +966,13 @@
       "weapon_class": "WEAPON_BOW",
       "image_name": "UI_EquipIcon_Bow_Vorpal"
     },
+    "splendoroftranquilwaters": {
+      "id": 11513,
+      "key": "splendoroftranquilwaters",
+      "rarity": 5,
+      "weapon_class": "WEAPON_SWORD_ONE_HAND",
+      "image_name": "UI_EquipIcon_Sword_Regalis"
+    },
     "staffofhoma": {
       "id": 13501,
       "key": "staffofhoma",
@@ -958,6 +1000,13 @@
       "rarity": 4,
       "weapon_class": "WEAPON_SWORD_ONE_HAND",
       "image_name": "UI_EquipIcon_Sword_Psalmus"
+    },
+    "swordofnarzissenkreuz": {
+      "id": 11428,
+      "key": "swordofnarzissenkreuz",
+      "rarity": 4,
+      "weapon_class": "WEAPON_SWORD_ONE_HAND",
+      "image_name": "UI_EquipIcon_Sword_Purewill"
     },
     "talkingstick": {
       "id": 12424,
@@ -993,6 +1042,13 @@
       "rarity": 4,
       "weapon_class": "WEAPON_POLE",
       "image_name": "UI_EquipIcon_Pole_Mori"
+    },
+    "thedockhandsassistant": {
+      "id": 11427,
+      "key": "thedockhandsassistant",
+      "rarity": 4,
+      "weapon_class": "WEAPON_SWORD_ONE_HAND",
+      "image_name": "UI_EquipIcon_Sword_Mechanic"
     },
     "thefirstgreatmagic": {
       "id": 15512,
@@ -1057,6 +1113,13 @@
       "weapon_class": "WEAPON_CLAYMORE",
       "image_name": "UI_EquipIcon_Claymore_Vorpal"
     },
+    "tomeoftheeternalflow": {
+      "id": 14514,
+      "key": "tomeoftheeternalflow",
+      "rarity": 5,
+      "weapon_class": "WEAPON_CATALYST",
+      "image_name": "UI_EquipIcon_Catalyst_Iudex"
+    },
     "toukaboushigure": {
       "id": 11422,
       "key": "toukaboushigure",
@@ -1084,6 +1147,20 @@
       "rarity": 3,
       "weapon_class": "WEAPON_CATALYST",
       "image_name": "UI_EquipIcon_Catalyst_Phoney"
+    },
+    "ultimateoverlordsmegamagicsword": {
+      "id": 12426,
+      "key": "ultimateoverlordsmegamagicsword",
+      "rarity": 4,
+      "weapon_class": "WEAPON_CLAYMORE",
+      "image_name": "UI_EquipIcon_Claymore_Champion"
+    },
+    "verdict": {
+      "id": 12512,
+      "key": "verdict",
+      "rarity": 5,
+      "weapon_class": "WEAPON_CLAYMORE",
+      "image_name": "UI_EquipIcon_Claymore_GoldenVerdict"
     },
     "vortexvanquisher": {
       "id": 13504,

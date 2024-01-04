@@ -53,7 +53,7 @@ func init() {
 	skillFrames[2][action.ActionJump] = 48
 }
 
-func (c *char) Skill(p map[string]int) action.ActionInfo {
+func (c *char) Skill(p map[string]int) (action.Info, error) {
 	// reset counter
 	if !c.StatusIsActive(eWindowKey) {
 		c.eCounter = 0
@@ -109,6 +109,7 @@ func (c *char) Skill(p map[string]int) action.ActionInfo {
 		ICDTag:             attacks.ICDTagNone,
 		ICDGroup:           attacks.ICDGroupDefault,
 		StrikeType:         attacks.StrikeTypeBlunt,
+		PoiseDMG:           120,
 		Element:            attributes.Pyro,
 		Durability:         25,
 		Mult:               skill[c.eCounter][c.TalentLvlSkill()],
@@ -156,12 +157,12 @@ func (c *char) Skill(p map[string]int) action.ActionInfo {
 		c.eCounter = 0
 	}
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAbilFunc(skillFrames[idx]),
 		AnimationLength: skillFrames[idx][action.InvalidAction],
 		CanQueueAfter:   skillFrames[idx][action.ActionDash], // earliest cancel
 		State:           action.SkillState,
-	}
+	}, nil
 }
 
 func (c *char) particleCB(a combat.AttackCB) {

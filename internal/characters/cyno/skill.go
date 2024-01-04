@@ -39,7 +39,7 @@ func init() {
 	skillBFrames[action.ActionSwap] = 33
 }
 
-func (c *char) Skill(p map[string]int) action.ActionInfo {
+func (c *char) Skill(p map[string]int) (action.Info, error) {
 	if c.StatusIsActive(BurstKey) {
 		return c.skillB()
 	}
@@ -71,15 +71,15 @@ func (c *char) Skill(p map[string]int) action.ActionInfo {
 
 	c.Core.Tasks.Add(c.triggerSkillCD, skillCDDelay)
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAbilFunc(skillFrames),
 		AnimationLength: skillFrames[action.InvalidAction],
 		CanQueueAfter:   skillFrames[action.ActionDash], // earliest cancel
 		State:           action.SkillState,
-	}
+	}, nil
 }
 
-func (c *char) skillB() action.ActionInfo {
+func (c *char) skillB() (action.Info, error) {
 	ai := combat.AttackInfo{
 		ActorIndex:       c.Index,
 		Abil:             skillBName,
@@ -87,6 +87,7 @@ func (c *char) skillB() action.ActionInfo {
 		ICDTag:           attacks.ICDTagNone,
 		ICDGroup:         attacks.ICDGroupDefault,
 		StrikeType:       attacks.StrikeTypeBlunt,
+		PoiseDMG:         75,
 		Element:          attributes.Electro,
 		Durability:       25,
 		Mult:             skillB[c.TalentLvlSkill()],
@@ -119,6 +120,7 @@ func (c *char) skillB() action.ActionInfo {
 		ai.ICDTag = attacks.ICDTagElementalArt
 		ai.ICDGroup = attacks.ICDGroupCynoBolt
 		ai.StrikeType = attacks.StrikeTypeSlash
+		ai.PoiseDMG = 25
 		ai.HitlagFactor = 0
 		ai.HitlagHaltFrames = 0
 
@@ -137,7 +139,6 @@ func (c *char) skillB() action.ActionInfo {
 				particleCB,
 			)
 		}
-
 	}
 	if c.burstExtension < 2 { // burst can only be extended 2 times per burst cycle (up to 18s, 10s base and +4 each time)
 		c.ExtendStatus(BurstKey, 240) // 4s*60
@@ -148,12 +149,12 @@ func (c *char) skillB() action.ActionInfo {
 
 	c.Core.Tasks.Add(c.triggerSkillCD, skillBCDDelay)
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAbilFunc(skillBFrames),
 		AnimationLength: skillBFrames[action.InvalidAction],
 		CanQueueAfter:   skillBFrames[action.ActionDash], // earliest cancel
 		State:           action.SkillState,
-	}
+	}, nil
 }
 
 func (c *char) triggerSkillCD() {

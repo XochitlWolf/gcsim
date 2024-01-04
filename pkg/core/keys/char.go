@@ -64,6 +64,7 @@ const (
 	Barbara
 	Beidou
 	Bennett
+	Charlotte
 	Chongyun
 	Cyno
 	Diluc
@@ -127,6 +128,11 @@ const (
 	Kaveh
 	Lyney
 	Lynette
+	Neuvillette
+	Freminet
+	Furina
+	Navia
+	Wriothesley
 	TestCharDoNotUse
 	EndCharKeys
 )
@@ -156,6 +162,7 @@ var charNames = []string{
 	"barbara",
 	"beidou",
 	"bennett",
+	"charlotte",
 	"chongyun",
 	"cyno",
 	"diluc",
@@ -219,6 +226,11 @@ var charNames = []string{
 	"kaveh",
 	"lyney",
 	"lynette",
+	"neuvillette",
+	"freminet",
+	"furina",
+	"navia",
+	"wriothesley",
 	"test_char_do_not_use",
 }
 
@@ -247,6 +259,7 @@ var charPrettyName = []string{
 	"Barbara",
 	"Beidou",
 	"Bennett",
+	"Charlotte",
 	"Chongyun",
 	"Cyno",
 	"Diluc",
@@ -310,6 +323,11 @@ var charPrettyName = []string{
 	"Kaveh",
 	"Lyney",
 	"Lynette",
+	"Neuvillette",
+	"Freminet",
+	"Furina",
+	"Navia",
+	"Wriothesley",
 	"!!!TEST CHAR DO NOT USE!!!",
 }
 
@@ -334,6 +352,7 @@ var CharKeyToEle = map[Char]attributes.Element{
 	Barbara:          attributes.Hydro,
 	Beidou:           attributes.Electro,
 	Bennett:          attributes.Pyro,
+	Charlotte:        attributes.Cryo,
 	Chongyun:         attributes.Cryo,
 	Cyno:             attributes.Electro,
 	Diluc:            attributes.Pyro,
@@ -397,5 +416,10 @@ var CharKeyToEle = map[Char]attributes.Element{
 	Kaveh:            attributes.Dendro,
 	Lyney:            attributes.Pyro,
 	Lynette:          attributes.Anemo,
+	Neuvillette:      attributes.Hydro,
+	Freminet:         attributes.Cryo,
+	Furina:           attributes.Hydro,
+	Navia:            attributes.Geo,
+	Wriothesley:      attributes.Cryo,
 	TestCharDoNotUse: attributes.Geo,
 }

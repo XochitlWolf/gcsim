@@ -22,6 +22,9 @@
     "thousandfloatingdreams",
     "tfd"
   ],
+  "balladoftheboundlessblue":[
+    "boundlessblue"
+  ],
   "balladofthefjords": [
     "ballad"
   ],
@@ -43,6 +46,9 @@
   ],
   "calamityqueller": [
     "calamity"
+  ],
+  "cashflowsupervision": [
+    "cashflow"
   ],
   "cinnabarspindle": [
     "cinnabar"
@@ -208,6 +214,9 @@
   "polarstar": [
     "polar"
   ],
+  "portablepowersaw": [
+    "powersaw"
+  ],
   "predator": [],
   "primordialjadecutter": [
     "jadecutter",
@@ -217,6 +226,7 @@
     "jadespear",
     "pjws"
   ],
+  "prospectorsdrill": [],
   "prototypeamber": [
     "pamber"
   ],
@@ -233,6 +243,7 @@
     "starglitter"
   ],
   "rainslasher": [],
+  "rangegauge": [],
   "ravenbow": [
     "raven"
   ],
@@ -306,6 +317,12 @@
     "sobp"
   ],
   "songofstillness": [],
+  "splendoroftranquilwaters": [
+    "splendoroftranquilwaters",
+    "tranquilwaters",
+    "sotw",
+    "splendor"
+  ],
   "staffofhoma": [
     "homa"
   ],
@@ -320,6 +337,9 @@
   "swordofdescension": [
     "descension"
   ],
+  "swordofnarzissenkreuz": [
+    "narzissenkreuz"
+  ],
   "talkingstick": [],
   "thealleyflash": [
     "alleyflash"
@@ -332,6 +352,9 @@
   ],
   "thecatch": [
     "catch"
+  ],
+  "thedockhandsassistant": [
+    "dockhand"
   ],
   "thefirstgreatmagic": [
     "firstgreatmagic",
@@ -360,6 +383,9 @@
     "tpulse"
   ],
   "tidalshadow": [],
+  "tomeoftheeternalflow": [
+    "eternalflow"
+  ],
   "toukaboushigure": [
     "shigure",
     "umbrella"
@@ -370,6 +396,11 @@
     "tula"
   ],
   "twinnephrite": [],
+  "ultimateoverlordsmegamagicsword": [
+    "megamagicsword",
+    "uomms"
+  ],
+  "verdict": [],
   "vortexvanquisher": [
     "vortex"
   ],

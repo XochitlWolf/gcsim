@@ -32,6 +32,7 @@ func NewChar(s *core.Core, w *character.CharWrapper, _ info.CharacterProfile) er
 	c.NormalHitNum = normalHitNum
 	c.BurstCon = 3
 	c.SkillCon = 5
+	c.HasArkhe = true
 
 	w.Character = &c
 
@@ -70,6 +71,7 @@ func (c *char) Init() error {
 
 	c.vividCount = 1
 	c.c2()
+	c.c4()
 
 	return nil
 }

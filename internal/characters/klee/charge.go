@@ -26,7 +26,7 @@ func init() {
 	chargeFrames[action.ActionSwap] = 104
 }
 
-func (c *char) ChargeAttack(p map[string]int) action.ActionInfo {
+func (c *char) ChargeAttack(p map[string]int) (action.Info, error) {
 	travel, ok := p["travel"]
 	if !ok {
 		travel = 10
@@ -39,6 +39,7 @@ func (c *char) ChargeAttack(p map[string]int) action.ActionInfo {
 		ICDTag:     attacks.ICDTagNone,
 		ICDGroup:   attacks.ICDGroupDefault,
 		StrikeType: attacks.StrikeTypeBlunt,
+		PoiseDMG:   180,
 		Element:    attributes.Pyro,
 		Durability: 25,
 		Mult:       charge[c.TalentLvlAttack()],
@@ -68,10 +69,10 @@ func (c *char) ChargeAttack(p map[string]int) action.ActionInfo {
 
 	c.c1(chargeHitmark - windup + travel)
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          func(next action.Action) int { return chargeFrames[next] - windup },
 		AnimationLength: chargeFrames[action.InvalidAction] - windup,
 		CanQueueAfter:   chargeFrames[action.ActionJump] - windup, // earliest cancel
 		State:           action.ChargeAttackState,
-	}
+	}, nil
 }

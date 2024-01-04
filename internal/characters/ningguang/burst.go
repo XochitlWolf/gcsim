@@ -22,7 +22,7 @@ func init() {
 	burstFrames[action.ActionSwap] = 98
 }
 
-func (c *char) Burst(p map[string]int) action.ActionInfo {
+func (c *char) Burst(p map[string]int) (action.Info, error) {
 	travel, ok := p["travel"]
 	if !ok {
 		travel = 0
@@ -35,6 +35,7 @@ func (c *char) Burst(p map[string]int) action.ActionInfo {
 		ICDTag:             attacks.ICDTagElementalBurst,
 		ICDGroup:           attacks.ICDGroupDefault,
 		StrikeType:         attacks.StrikeTypeBlunt,
+		PoiseDMG:           30,
 		Element:            attributes.Geo,
 		Durability:         50,
 		Mult:               burst[c.TalentLvlBurst()],
@@ -72,10 +73,10 @@ func (c *char) Burst(p map[string]int) action.ActionInfo {
 	c.ConsumeEnergy(3)
 	c.SetCD(action.ActionBurst, 720)
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAbilFunc(burstFrames),
 		AnimationLength: burstFrames[action.InvalidAction],
 		CanQueueAfter:   burstFrames[action.ActionSwap],
 		State:           action.BurstState,
-	}
+	}, nil
 }

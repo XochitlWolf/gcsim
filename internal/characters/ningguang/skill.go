@@ -25,7 +25,7 @@ func init() {
 	skillFrames[action.ActionSwap] = 60
 }
 
-func (c *char) Skill(p map[string]int) action.ActionInfo {
+func (c *char) Skill(p map[string]int) (action.Info, error) {
 	ai := combat.AttackInfo{
 		ActorIndex:         c.Index,
 		Abil:               "Jade Screen",
@@ -33,6 +33,7 @@ func (c *char) Skill(p map[string]int) action.ActionInfo {
 		ICDTag:             attacks.ICDTagNone,
 		ICDGroup:           attacks.ICDGroupDefault,
 		StrikeType:         attacks.StrikeTypeBlunt,
+		PoiseDMG:           133.2,
 		Element:            attributes.Geo,
 		Durability:         25,
 		Mult:               skill[c.TalentLvlSkill()],
@@ -57,11 +58,11 @@ func (c *char) Skill(p map[string]int) action.ActionInfo {
 		)
 	}, skillHitmark)
 
-	//put skill on cd first then check for construct/c2
+	// put skill on cd first then check for construct/c2
 	c.SetCD(action.ActionSkill, 720)
 
-	//create a construct
-	c.Core.Constructs.New(c.newScreen(1800, screenDir, screenPos), true) //30 seconds
+	// create a construct
+	c.Core.Constructs.New(c.newScreen(1800, screenDir, screenPos), true) // 30 seconds
 
 	c.lastScreen = c.Core.F
 
@@ -72,12 +73,12 @@ func (c *char) Skill(p map[string]int) action.ActionInfo {
 		}, 1)
 	}
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAbilFunc(skillFrames),
 		AnimationLength: skillFrames[action.InvalidAction],
 		CanQueueAfter:   skillFrames[action.ActionDash],
 		State:           action.SkillState,
-	}
+	}, nil
 }
 
 func (c *char) particleCB(a combat.AttackCB) {

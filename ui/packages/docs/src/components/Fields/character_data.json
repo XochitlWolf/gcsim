@@ -43,6 +43,26 @@
       "desc": "Current number of coil stacks."
     }
   ],
+  "furina": [
+    {
+      "fields": [
+        ".furina.ousia"
+      ],
+      "desc": "Whether Furina is in the Ousia Arke."
+    },
+    {
+      "fields": [
+        ".furina.fanfare"
+      ],
+      "desc": "Current amount of fanfare."
+    },
+    {
+      "fields": [
+        ".furina.c6-count"
+      ],
+      "desc": "Number of c6 effects triggered."
+    }
+  ],
   "fischl": [
     {
       "fields": [
@@ -113,6 +133,14 @@
       "desc": "Returns whether C6 will proc for the upcoming CA."
     }
   ],
+  "lyney": [
+    {
+      "fields": [
+        ".lyney.propSurplusStacks"
+      ],
+      "desc": "Number of Prop Surplus stacks."
+    }
+  ],
   "ningguang": [
     {
       "fields": [
@@ -151,12 +179,42 @@
       "desc": "Amount of Kuugoryoku Points that Wanderer has. A value greater than 0 indicates that Wanderer is in the Windfavored state."
     }
   ],
+  "wriothesley": [
+    {
+      "fields": [
+        ".wriothesley.gracious-rebuke"
+      ],
+      "desc": "Whether Wriothesley currently has a Gracious Rebuke or not."
+    }
+  ],
   "heizou": [
     {
       "fields": [
         ".heizou.declension"
       ],
       "desc": "Number of Declension stacks."
+    }
+  ],
+  "navia": [
+    {
+      "fields": [
+        ".navia.shrapnel"
+      ],
+      "desc": "Number of Crystal Shrapnel stacks."
+    }
+  ],
+  "neuvillette": [
+    {
+      "fields": [
+        ".neuvillette.droplets"
+      ],
+      "desc": "Number of Sourcewater droplets in range for Charged Attack Empowerment: Legal Evaluation."
+    },
+    {
+      "fields": [
+        ".neuvillette.droplets-c6"
+      ],
+      "desc": "Number of Sourcewater droplets in range for C6."
     }
   ]
 }

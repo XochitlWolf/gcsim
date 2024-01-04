@@ -25,7 +25,7 @@ func init() {
 }
 
 // Burst - The main buff effects are handled in a separate function
-func (c *char) Burst(p map[string]int) action.ActionInfo {
+func (c *char) Burst(p map[string]int) (action.Info, error) {
 	// AoE Geo damage
 	ai := combat.AttackInfo{
 		ActorIndex: c.Index,
@@ -34,35 +34,38 @@ func (c *char) Burst(p map[string]int) action.ActionInfo {
 		ICDTag:     attacks.ICDTagElementalBurst,
 		ICDGroup:   attacks.ICDGroupDefault,
 		StrikeType: attacks.StrikeTypeBlunt,
+		PoiseDMG:   200,
 		Element:    attributes.Geo,
 		Durability: 50,
 		Mult:       burstDmg[c.TalentLvlBurst()],
 	}
-	c.Core.QueueAttack(ai, combat.NewCircleHitOnTarget(c.Core.Combat.Player(), nil, 6), burstHitmark, burstHitmark)
 
-	// Reset number of burst triggers to 30
-	for _, char := range c.Core.Player.Chars() {
-		char.SetTag(burstBuffKey, 30)
-		char.AddStatus(burstBuffKey, 720, true)
-	}
+	// delete burst, c2 and c6 at start
+	c.DeleteStatus(burstBuffKey)
+	c.deleteC2()
+	c.deleteC6()
 
-	// TODO: Need to obtain exact timing of c2/c6. Currently assume that it starts when burst is used
-	if c.Base.Cons >= 2 {
+	// queue dmg and burst, c2 and c6 start
+	c.QueueCharTask(func() {
+		c.Core.QueueAttack(ai, combat.NewCircleHitOnTarget(c.Core.Combat.Player(), nil, 6), 0, 0)
+		// Reset number of burst triggers to 30
+		for _, char := range c.Core.Player.Chars() {
+			char.SetTag(burstBuffKey, 30)
+			char.AddStatus(burstBuffKey, 720, true)
+		}
 		c.c2()
-	}
-	if c.Base.Cons >= 6 {
 		c.c6()
-	}
+	}, burstHitmark)
 
 	c.ConsumeEnergy(4)
 	c.SetCD(action.ActionBurst, 15*60)
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAbilFunc(burstFrames),
 		AnimationLength: burstFrames[action.InvalidAction],
 		CanQueueAfter:   burstFrames[action.ActionJump], // earliest cancel
 		State:           action.BurstState,
-	}
+	}, nil
 }
 
 func (c *char) burstProc() {
@@ -74,7 +77,7 @@ func (c *char) burstProc() {
 			return false
 		}
 		char := c.Core.Player.ByIndex(ae.Info.ActorIndex)
-		//do nothing if buff gone or burst count gone
+		// do nothing if buff gone or burst count gone
 		if char.Tags[burstBuffKey] == 0 {
 			return false
 		}

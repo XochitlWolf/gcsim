@@ -22,9 +22,11 @@ type char struct {
 	sanctumICD      int
 	burstCast       int
 	burstCounter    int
-	burstHitSrc     int //I am using this value as a counter because if I use frame I can get duplicates
+	burstHitSrc     int // I am using this value as a counter because if I use frame I can get duplicates
 	c1var           []float64
 	c6count         int
+	sanctumSavedDur int
+	burstJumpCancel bool
 }
 
 func init() {
@@ -62,7 +64,8 @@ func (c *char) Init() error {
 
 	return nil
 }
-func (c *char) ActionReady(a action.Action, p map[string]int) (bool, action.ActionFailure) {
+
+func (c *char) ActionReady(a action.Action, p map[string]int) (bool, action.Failure) {
 	// check if it is possible to use next skill
 	if a == action.ActionSkill && c.StatusIsActive(dehyaFieldKey) && !c.hasSkillRecast {
 		return true, action.NoFailure
@@ -83,40 +86,36 @@ func (c *char) onExitField() {
 		}
 		c.a1()
 		c.DeleteStatus(burstKey)
-		if remainingFieldDur > 0 { //place field
-			c.QueueCharTask(func() {
-				c.addField(remainingFieldDur)
-			}, kickHitmark)
+		if dur := c.sanctumSavedDur; dur > 0 { // place field
+			c.sanctumSavedDur = 0
+			c.QueueCharTask(func() { c.addField(dur) }, kickHitmark)
 		}
 
 		return false
 	}, "dehya-exit")
 }
 
-var burstIsJumpCancelled = false
-
-func (c *char) Jump(p map[string]int) action.ActionInfo {
+func (c *char) Jump(p map[string]int) (action.Info, error) {
 	if !c.StatusIsActive(burstKey) {
 		if c.StatusIsActive(kickKey) {
 			c.Core.Log.NewEvent("dehya can't jump cancel her kick", glog.LogActionEvent, c.Index).
 				Write("action", action.ActionJump)
-			return action.ActionInfo{
+			return action.Info{
 				Frames:          func(action.Action) int { return 1200 },
 				AnimationLength: kickHitmark,
 				CanQueueAfter:   kickHitmark,
 				State:           action.BurstState,
-			}
+			}, nil
 		}
 		return c.Character.Jump(p)
 	}
 
-	burstIsJumpCancelled = true
+	c.burstJumpCancel = true
 	c.DeleteStatus(burstKey)
 
-	if remainingFieldDur > 0 { //place field
-		c.QueueCharTask(func() {
-			c.addField(remainingFieldDur)
-		}, kickHitmark)
+	if dur := c.sanctumSavedDur; dur > 0 { // place field
+		c.sanctumSavedDur = 0
+		c.QueueCharTask(func() { c.addField(dur) }, kickHitmark)
 	}
 	return c.Character.Jump(p)
 }

@@ -1,8 +1,6 @@
 package thoma
 
 import (
-	"math"
-
 	"github.com/genshinsim/gcsim/pkg/core/attacks"
 	"github.com/genshinsim/gcsim/pkg/core/attributes"
 	"github.com/genshinsim/gcsim/pkg/core/combat"
@@ -17,21 +15,21 @@ func (c *char) genShield(src string, shieldamt float64, shouldStack bool) {
 		c.AddStatus("thoma-a1-icd", 18, true) // 0.3s * 60
 		c.AddStatus("thoma-a1", 360, true)    // 6s * 60
 	}
-	existingShield := c.Core.Player.Shields.Get(shield.ShieldThomaSkill)
+	existingShield := c.Core.Player.Shields.Get(shield.ThomaSkill)
 	if existingShield != nil {
 		if shouldStack {
 			shieldamt += existingShield.CurrentHP()
 		} else {
-			shieldamt = math.Max(shieldamt, existingShield.CurrentHP())
+			shieldamt = max(shieldamt, existingShield.CurrentHP())
 		}
-		shieldamt = math.Min(shieldamt, c.maxShieldHP())
+		shieldamt = min(shieldamt, c.maxShieldHP())
 	}
 	// add shield
 	c.Core.Tasks.Add(func() {
 		c.Core.Player.Shields.Add(&shield.Tmpl{
 			ActorIndex: c.Index,
 			Src:        c.Core.F,
-			ShieldType: shield.ShieldThomaSkill,
+			ShieldType: shield.ThomaSkill,
 			Name:       src,
 			HP:         shieldamt,
 			Ele:        attributes.Pyro,

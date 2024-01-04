@@ -38,9 +38,9 @@ func init() {
 	attackFrames[3][action.ActionCharge] = 500                               // impossible action
 }
 
-func (c *char) Attack(p map[string]int) action.ActionInfo {
+func (c *char) Attack(p map[string]int) (action.Info, error) {
 	if c.StatusIsActive(BurstKey) {
-		return c.attackB(p) // go to burst mode attacks
+		return c.attackB() // go to burst mode attacks
 	}
 	c2CB := c.makeC2CB()
 	c6CB := c.makeC6CB()
@@ -88,12 +88,12 @@ func (c *char) Attack(p map[string]int) action.ActionInfo {
 
 	defer c.AdvanceNormalIndex()
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAttackFunc(c.Character, attackFrames),
 		AnimationLength: attackFrames[c.NormalCounter][action.InvalidAction],
 		CanQueueAfter:   attackHitmarks[c.NormalCounter][len(attackHitmarks[c.NormalCounter])-1],
 		State:           action.NormalAttackState,
-	}
+	}, nil
 }
 
 const burstHitNum = 5
@@ -126,7 +126,7 @@ func init() {
 	attackBFrames[4][action.ActionCharge] = 500                                // illegal action
 }
 
-func (c *char) attackB(p map[string]int) action.ActionInfo {
+func (c *char) attackB() (action.Info, error) {
 	c.tryBurstPPSlide(attackBHitmarks[c.normalBCounter][len(attackBHitmarks[c.normalBCounter])-1])
 
 	c2CB := c.makeC2CB()
@@ -148,8 +148,13 @@ func (c *char) attackB(p map[string]int) action.ActionInfo {
 			FlatDmg:            c.a4NormalAttack(),
 			IgnoreInfusion:     true,
 		}
-		if c.normalBCounter == 2 || c.normalBCounter == 4 {
+		if c.normalBCounter == 2 {
 			ai.StrikeType = attacks.StrikeTypeBlunt
+			ai.PoiseDMG = 64.0248
+		}
+		if c.normalBCounter == 4 {
+			ai.StrikeType = attacks.StrikeTypeBlunt
+			ai.PoiseDMG = 77.7
 		}
 		ap := combat.NewCircleHitOnTarget(
 			c.Core.Combat.Player(),
@@ -170,17 +175,15 @@ func (c *char) attackB(p map[string]int) action.ActionInfo {
 	}
 
 	defer c.AdvanceNormalIndex()
+	n := c.normalBCounter
+	atkspd := c.Stat(attributes.AtkSpd)
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames: func(next action.Action) int {
-			n := c.normalBCounter - 1
-			if n < 0 {
-				n = burstHitNum - 1
-			}
-			return frames.AtkSpdAdjust(attackBFrames[n][next], c.Stat(attributes.AtkSpd))
+			return frames.AtkSpdAdjust(attackBFrames[n][next], atkspd)
 		},
 		AnimationLength: attackBFrames[c.normalBCounter][action.InvalidAction],
 		CanQueueAfter:   attackBHitmarks[c.normalBCounter][len(attackBHitmarks[c.normalBCounter])-1],
 		State:           action.NormalAttackState,
-	}
+	}, nil
 }

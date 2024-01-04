@@ -22,6 +22,7 @@ var (
 		{attacks.StrikeTypeSlash, attacks.StrikeTypeSlash},
 		{attacks.StrikeTypeSpear},
 	}
+	attackPoiseDMG  = []float64{60.08, 59.76, 38.08, 94.8}
 	attackHitboxes  = [][]float64{{2.5}, {2.2, 3}, {2.5}, {2.2, 7}}
 	attackOffsets   = []float64{-0.3, -0.1, 0.3, -0.1}
 	attackFanAngles = []float64{360, 360, 270, 360}
@@ -43,7 +44,7 @@ func init() {
 	attackFrames[3][action.ActionCharge] = 500                               // TODO: this action is illegal; need better way to handle it
 }
 
-func (c *char) Attack(p map[string]int) action.ActionInfo {
+func (c *char) Attack(p map[string]int) (action.Info, error) {
 	for i, mult := range attack[c.NormalCounter] {
 		ai := combat.AttackInfo{
 			ActorIndex:         c.Index,
@@ -52,6 +53,7 @@ func (c *char) Attack(p map[string]int) action.ActionInfo {
 			ICDTag:             attacks.ICDTagNormalAttack,
 			ICDGroup:           attacks.ICDGroupDefault,
 			StrikeType:         attackStrikeTypes[c.NormalCounter][i],
+			PoiseDMG:           attackPoiseDMG[c.NormalCounter],
 			Element:            attributes.Physical,
 			Durability:         25,
 			Mult:               mult[c.TalentLvlAttack()],
@@ -78,10 +80,10 @@ func (c *char) Attack(p map[string]int) action.ActionInfo {
 
 	defer c.AdvanceNormalIndex()
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAttackFunc(c.Character, attackFrames),
 		AnimationLength: attackFrames[c.NormalCounter][action.InvalidAction],
 		CanQueueAfter:   attackHitmarks[c.NormalCounter][len(attackHitmarks[c.NormalCounter])-1],
 		State:           action.NormalAttackState,
-	}
+	}, nil
 }

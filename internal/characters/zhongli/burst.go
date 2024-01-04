@@ -20,8 +20,8 @@ func init() {
 	burstFrames[action.ActionSwap] = 138    // Q -> Swap
 }
 
-func (c *char) Burst(p map[string]int) action.ActionInfo {
-	//deal damage when created
+func (c *char) Burst(p map[string]int) (action.Info, error) {
+	// deal damage when created
 	ai := combat.AttackInfo{
 		ActorIndex: c.Index,
 		Abil:       "Planet Befall",
@@ -29,6 +29,7 @@ func (c *char) Burst(p map[string]int) action.ActionInfo {
 		ICDTag:     attacks.ICDTagNone,
 		ICDGroup:   attacks.ICDGroupDefault,
 		StrikeType: attacks.StrikeTypeBlunt,
+		PoiseDMG:   500,
 		Element:    attributes.Geo,
 		Durability: 100,
 		Mult:       burst[c.TalentLvlBurst()],
@@ -52,10 +53,10 @@ func (c *char) Burst(p map[string]int) action.ActionInfo {
 	c.SetCD(action.ActionBurst, 720)
 	c.ConsumeEnergy(7)
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAbilFunc(burstFrames),
 		AnimationLength: burstFrames[action.InvalidAction],
 		CanQueueAfter:   burstFrames[action.ActionDash], // earliest cancel
 		State:           action.BurstState,
-	}
+	}, nil
 }

@@ -26,8 +26,8 @@ func init() {
 	burstFrames[action.ActionSwap] = 24
 }
 
-func (c *char) Burst(p map[string]int) action.ActionInfo {
-	//initial damage; part of the burst tag
+func (c *char) Burst(p map[string]int) (action.Info, error) {
+	// initial damage; part of the burst tag
 	ai := combat.AttackInfo{
 		ActorIndex: c.Index,
 		Abil:       "Midnight Phantasmagoria",
@@ -35,6 +35,7 @@ func (c *char) Burst(p map[string]int) action.ActionInfo {
 		ICDTag:     attacks.ICDTagElementalBurst,
 		ICDGroup:   attacks.ICDGroupFischl,
 		StrikeType: attacks.StrikeTypeBlunt,
+		PoiseDMG:   150,
 		Element:    attributes.Electro,
 		Durability: 25,
 		Mult:       burst[c.TalentLvlBurst()],
@@ -46,7 +47,8 @@ func (c *char) Burst(p map[string]int) action.ActionInfo {
 		burstHitmark,
 	)
 
-	//check for C4 damage
+	// check for C4
+	var c4HealFunc func()
 	if c.Base.Cons >= 4 {
 		ai := combat.AttackInfo{
 			ActorIndex: c.Index,
@@ -61,18 +63,17 @@ func (c *char) Burst(p map[string]int) action.ActionInfo {
 		}
 		// C4 damage always occurs before burst damage.
 		c.Core.QueueAttack(ai, combat.NewCircleHitOnTarget(c.Core.Combat.Player(), nil, 5), 8, 8)
-		//heal at end of animation
-		heal := c.MaxHP() * 0.2
-		c.Core.Tasks.Add(func() {
+
+		// heal
+		c4HealFunc = func() {
 			c.Core.Player.Heal(player.HealInfo{
 				Caller:  c.Index,
 				Target:  c.Index,
 				Message: "Her Pilgrimage of Bleak (C4)",
-				Src:     heal,
+				Src:     0.2 * c.MaxHP(),
 				Bonus:   c.Stat(attributes.Heal),
 			})
-		}, burstHitmark) // TODO: should be at end of burst and not hitmark?
-
+		}
 	}
 
 	c.ConsumeEnergy(6)
@@ -81,26 +82,30 @@ func (c *char) Burst(p map[string]int) action.ActionInfo {
 	// set oz to active at the start of the action
 	c.ozActive = true
 	c.burstOzSpawnSrc = c.Core.F
-	burstFullOzFunc := c.burstOzSpawn(c.Core.F, 0, burstFullOzFirstTick)
-	burstShortOzFunc := c.burstOzSpawn(c.Core.F, burstShortOzSpawn, burstShortOzFirstTick)
+	burstFullOzFunc := c.burstOzSpawn(c.Core.F, 0, burstFullOzFirstTick, c4HealFunc)
+	burstShortOzFunc := c.burstOzSpawn(c.Core.F, burstShortOzSpawn, burstShortOzFirstTick, c4HealFunc)
 
 	c.Core.Tasks.Add(burstFullOzFunc, burstFullOzSpawn)
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAbilFunc(burstFrames),
 		AnimationLength: burstFrames[action.InvalidAction],
 		CanQueueAfter:   burstFrames[action.ActionSwap], // earliest cancel
 		State:           action.BurstState,
 		OnRemoved:       func(next action.AnimationState) { burstShortOzFunc() },
-	}
+	}, nil
 }
 
-func (c *char) burstOzSpawn(src, ozSpawn, firstTick int) func() {
+func (c *char) burstOzSpawn(src, ozSpawn, firstTick int, c4HealFunc func()) func() {
 	return func() {
 		if src != c.burstOzSpawnSrc {
 			return
 		}
 		c.burstOzSpawnSrc = -1
 		c.queueOz("Burst", ozSpawn, firstTick)
+		// C4 heal should happen right after oz spawn/end of animation because buffs proc'd from the heal are not snapped into Oz
+		if c4HealFunc != nil {
+			c.Core.Tasks.Add(c4HealFunc, ozSpawn+1)
+		}
 	}
 }

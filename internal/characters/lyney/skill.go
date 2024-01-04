@@ -47,9 +47,9 @@ func init() {
 	skillBurstFrames[action.ActionSwap] = 28
 }
 
-func (c *char) Skill(p map[string]int) action.ActionInfo {
+func (c *char) Skill(p map[string]int) (action.Info, error) {
 	if c.StatusIsActive(burstKey) {
-		return c.skillBurst(p)
+		return c.skillBurst(), nil
 	}
 
 	ai := combat.AttackInfo{
@@ -89,18 +89,18 @@ func (c *char) Skill(p map[string]int) action.ActionInfo {
 
 	c.SetCDWithDelay(action.ActionSkill, skillCD, skillCDStart)
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAbilFunc(skillFrames),
 		AnimationLength: skillFrames[action.InvalidAction],
 		CanQueueAfter:   skillFrames[action.ActionSwap],
 		State:           action.SkillState,
-	}
+	}, nil
 }
 
-func (c *char) skillBurst(p map[string]int) action.ActionInfo {
+func (c *char) skillBurst() action.Info {
 	c.explosiveFirework()
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAbilFunc(skillBurstFrames),
 		AnimationLength: skillBurstFrames[action.InvalidAction],
 		CanQueueAfter:   skillBurstFrames[action.ActionJump],

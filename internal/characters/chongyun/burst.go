@@ -22,7 +22,7 @@ func init() {
 	burstFrames[action.ActionJump] = 66    // Q -> J
 }
 
-func (c *char) Burst(p map[string]int) action.ActionInfo {
+func (c *char) Burst(p map[string]int) (action.Info, error) {
 	ai := combat.AttackInfo{
 		ActorIndex: c.Index,
 		Abil:       "Spirit Blade: Cloud-Parting Star",
@@ -30,6 +30,7 @@ func (c *char) Burst(p map[string]int) action.ActionInfo {
 		ICDTag:     attacks.ICDTagNone,
 		ICDGroup:   attacks.ICDGroupDefault,
 		StrikeType: attacks.StrikeTypeBlunt,
+		PoiseDMG:   100,
 		Element:    attributes.Cryo,
 		Durability: 25,
 		Mult:       burst[c.TalentLvlBurst()],
@@ -62,10 +63,10 @@ func (c *char) Burst(p map[string]int) action.ActionInfo {
 	c.SetCD(action.ActionBurst, 720)
 	c.ConsumeEnergy(6)
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAbilFunc(burstFrames),
 		AnimationLength: burstFrames[action.InvalidAction],
 		CanQueueAfter:   burstFrames[action.ActionDash], // earliest cancel
 		State:           action.BurstState,
-	}
+	}, nil
 }

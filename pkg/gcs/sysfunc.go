@@ -16,6 +16,7 @@ import (
 	"github.com/genshinsim/gcsim/pkg/core/keys"
 	"github.com/genshinsim/gcsim/pkg/core/reactions"
 	"github.com/genshinsim/gcsim/pkg/gcs/ast"
+	"github.com/genshinsim/gcsim/pkg/reactable"
 	"github.com/genshinsim/gcsim/pkg/shortcut"
 )
 
@@ -37,7 +38,9 @@ func (e *Eval) initSysFuncs(env *Env) {
 	e.addSysFunc("set_default_target", e.setDefaultTarget, env)
 	e.addSysFunc("set_particle_delay", e.setParticleDelay, env)
 	e.addSysFunc("kill_target", e.killTarget, env)
+	e.addSysFunc("pick_up_crystallize", e.pickUpCrystallize, env)
 	e.addSysFunc("apply_target_aura", e.applyTargetAura, env)
+
 	// math
 	e.addSysFunc("sin", e.sin, env)
 	e.addSysFunc("cos", e.cos, env)
@@ -57,7 +60,7 @@ func (e *Eval) addSysFunc(name string, f func(c *ast.CallExpr, env *Env) (Obj, e
 }
 
 func (e *Eval) print(c *ast.CallExpr, env *Env) (Obj, error) {
-	//concat all args
+	// concat all args
 	var sb strings.Builder
 	for _, arg := range c.Args {
 		val, err := e.evalExpr(arg, env)
@@ -97,12 +100,12 @@ func (e *Eval) randnorm(c *ast.CallExpr, env *Env) (Obj, error) {
 }
 
 func (e *Eval) wait(c *ast.CallExpr, env *Env) (Obj, error) {
-	//wait(number goes in here)
+	// wait(number goes in here)
 	if len(c.Args) != 1 {
 		return nil, fmt.Errorf("invalid number of params for wait, expected 1 got %v", len(c.Args))
 	}
 
-	//should eval to a number
+	// should eval to a number
 	val, err := e.evalExpr(c.Args[0], env)
 	if err != nil {
 		return nil, err
@@ -113,21 +116,21 @@ func (e *Eval) wait(c *ast.CallExpr, env *Env) (Obj, error) {
 		return nil, fmt.Errorf("wait argument should evaluate to a number, got %v", val.Inspect())
 	}
 
-	var f int = int(n.ival)
+	f := int(n.ival)
 	if n.isFloat {
 		f = int(n.fval)
 	}
 
 	if f < 0 {
-		//do nothing if less or equal to 0
+		// do nothing if less or equal to 0
 		return &number{}, nil
 	}
 
-	e.sendWork(&action.ActionEval{
+	e.sendWork(&action.Eval{
 		Action: action.ActionWait,
 		Param:  map[string]int{"f": f},
 	})
-	//block until sim is done with the action; unless we're done
+	// block until sim is done with the action; unless we're done
 	err = e.waitForNext()
 	if err != nil {
 		return nil, err
@@ -137,12 +140,12 @@ func (e *Eval) wait(c *ast.CallExpr, env *Env) (Obj, error) {
 }
 
 func (e *Eval) delay(c *ast.CallExpr, env *Env) (Obj, error) {
-	//delay(number goes in here)
+	// delay(number goes in here)
 	if len(c.Args) != 1 {
 		return nil, fmt.Errorf("invalid number of params for delay, expected 1 got %v", len(c.Args))
 	}
 
-	//should eval to a number
+	// should eval to a number
 	val, err := e.evalExpr(c.Args[0], env)
 	if err != nil {
 		return nil, err
@@ -153,21 +156,21 @@ func (e *Eval) delay(c *ast.CallExpr, env *Env) (Obj, error) {
 		return nil, fmt.Errorf("delay argument should evaluate to a number, got %v", val.Inspect())
 	}
 
-	var f int = int(n.ival)
+	f := int(n.ival)
 	if n.isFloat {
 		f = int(n.fval)
 	}
 
 	if f < 0 {
-		//do nothing if less or equal to 0
+		// do nothing if less or equal to 0
 		return &number{}, nil
 	}
 
-	e.sendWork(&action.ActionEval{
+	e.sendWork(&action.Eval{
 		Action: action.ActionDelay,
 		Param:  map[string]int{"f": f},
 	})
-	//block until sim is done with the action; unless we're done
+	// block until sim is done with the action; unless we're done
 	err = e.waitForNext()
 	if err != nil {
 		return nil, err
@@ -177,7 +180,7 @@ func (e *Eval) delay(c *ast.CallExpr, env *Env) (Obj, error) {
 }
 
 func (e *Eval) typeval(c *ast.CallExpr, env *Env) (Obj, error) {
-	//type(var)
+	// type(var)
 	if len(c.Args) != 1 {
 		return nil, fmt.Errorf("invalid number of params for type, expected 1 got %v", len(c.Args))
 	}
@@ -211,7 +214,7 @@ func (e *Eval) typeval(c *ast.CallExpr, env *Env) (Obj, error) {
 }
 
 func (e *Eval) setPlayerPos(c *ast.CallExpr, env *Env) (Obj, error) {
-	//set_player_pos(x, y)
+	// set_player_pos(x, y)
 	if len(c.Args) != 2 {
 		return nil, fmt.Errorf("invalid number of params for set_player_pos, expected 2 got %v", len(c.Args))
 	}
@@ -224,8 +227,8 @@ func (e *Eval) setPlayerPos(c *ast.CallExpr, env *Env) (Obj, error) {
 	if !ok {
 		return nil, fmt.Errorf("set_player_pos argument x coord should evaluate to a number, got %v", t.Inspect())
 	}
-	//n should be float
-	var x float64 = n.fval
+	// n should be float
+	x := n.fval
 	if !n.isFloat {
 		x = float64(n.ival)
 	}
@@ -238,8 +241,8 @@ func (e *Eval) setPlayerPos(c *ast.CallExpr, env *Env) (Obj, error) {
 	if !ok {
 		return nil, fmt.Errorf("set_player_pos argument y coord should evaluate to a number, got %v", t.Inspect())
 	}
-	//n should be float
-	var y float64 = n.fval
+	// n should be float
+	y := n.fval
 	if !n.isFloat {
 		y = float64(n.ival)
 	}
@@ -251,7 +254,7 @@ func (e *Eval) setPlayerPos(c *ast.CallExpr, env *Env) (Obj, error) {
 }
 
 func (e *Eval) setParticleDelay(c *ast.CallExpr, env *Env) (Obj, error) {
-	//set_particle_delay("character", x);
+	// set_particle_delay("character", x);
 	if len(c.Args) != 2 {
 		return nil, fmt.Errorf("invalid number of params for set_particle_delay, expected 2 got %v", len(c.Args))
 	}
@@ -264,7 +267,7 @@ func (e *Eval) setParticleDelay(c *ast.CallExpr, env *Env) (Obj, error) {
 		return nil, fmt.Errorf("set_particle_delay first argument should evaluate to a string, got %v", t.Inspect())
 	}
 
-	//check name exists on team
+	// check name exists on team
 	ck, ok := shortcut.CharNameToKey[name.str]
 	if !ok {
 		return nil, fmt.Errorf("set_particle_delay first argument %v is not a valid character", name.str)
@@ -283,8 +286,8 @@ func (e *Eval) setParticleDelay(c *ast.CallExpr, env *Env) (Obj, error) {
 	if !ok {
 		return nil, fmt.Errorf("set_particle_delay second argument should evaluate to a number, got %v", t.Inspect())
 	}
-	//n should be int
-	var delay int = int(n.ival)
+	// n should be int
+	delay := int(n.ival)
 	if n.isFloat {
 		delay = int(n.fval)
 	}
@@ -309,13 +312,13 @@ func (e *Eval) setDefaultTarget(c *ast.CallExpr, env *Env) (Obj, error) {
 	if !ok {
 		return nil, fmt.Errorf("set_default_target argument should evaluate to a number, got %v", t.Inspect())
 	}
-	//n should be int
-	var idx int = int(n.ival)
+	// n should be int
+	idx := int(n.ival)
 	if n.isFloat {
 		idx = int(n.fval)
 	}
 
-	//check if index is in range
+	// check if index is in range
 	if idx < 1 || idx > e.Core.Combat.EnemyCount() {
 		return nil, fmt.Errorf("index for set_default_target is invalid, should be between %v and %v, got %v", 1, e.Core.Combat.EnemyCount(), idx)
 	}
@@ -324,16 +327,15 @@ func (e *Eval) setDefaultTarget(c *ast.CallExpr, env *Env) (Obj, error) {
 	e.Core.Combat.Player().SetDirectionToClosestEnemy()
 
 	return &null{}, nil
-
 }
 
 func (e *Eval) setTargetPos(c *ast.CallExpr, env *Env) (Obj, error) {
-	//set_target_pos(1,x,y)
+	// set_target_pos(1,x,y)
 	if len(c.Args) != 3 {
 		return nil, fmt.Errorf("invalid number of params for set_target_pos, expected 3 got %v", len(c.Args))
 	}
 
-	//all 3 param should eval to numbers
+	// all 3 param should eval to numbers
 	t, err := e.evalExpr(c.Args[0], env)
 	if err != nil {
 		return nil, err
@@ -342,8 +344,8 @@ func (e *Eval) setTargetPos(c *ast.CallExpr, env *Env) (Obj, error) {
 	if !ok {
 		return nil, fmt.Errorf("set_target_pos argument target index should evaluate to a number, got %v", t.Inspect())
 	}
-	//n should be int
-	var idx int = int(n.ival)
+	// n should be int
+	idx := int(n.ival)
 	if n.isFloat {
 		idx = int(n.fval)
 	}
@@ -356,8 +358,8 @@ func (e *Eval) setTargetPos(c *ast.CallExpr, env *Env) (Obj, error) {
 	if !ok {
 		return nil, fmt.Errorf("set_target_pos argument x coord should evaluate to a number, got %v", t.Inspect())
 	}
-	//n should be float
-	var x float64 = n.fval
+	// n should be float
+	x := n.fval
 	if !n.isFloat {
 		x = float64(n.ival)
 	}
@@ -370,13 +372,13 @@ func (e *Eval) setTargetPos(c *ast.CallExpr, env *Env) (Obj, error) {
 	if !ok {
 		return nil, fmt.Errorf("set_target_pos argument y coord should evaluate to a number, got %v", t.Inspect())
 	}
-	//n should be float
-	var y float64 = n.fval
+	// n should be float
+	y := n.fval
 	if !n.isFloat {
 		y = float64(n.ival)
 	}
 
-	//check if index is in range
+	// check if index is in range
 	if idx < 1 || idx > e.Core.Combat.EnemyCount() {
 		return nil, fmt.Errorf("index for set_default_target is invalid, should be between %v and %v, got %v", 1, e.Core.Combat.EnemyCount(), idx)
 	}
@@ -388,12 +390,12 @@ func (e *Eval) setTargetPos(c *ast.CallExpr, env *Env) (Obj, error) {
 }
 
 func (e *Eval) applyTargetAura(c *ast.CallExpr, env *Env) (Obj, error) {
-	//apply_target_elem(1,elem,amount)
+	// apply_target_elem(1,elem,amount)
 	if len(c.Args) != 3 {
 		return nil, fmt.Errorf("invalid number of params for apply_target_aura, expected 3 got %v", len(c.Args))
 	}
 
-	//all 3 param should eval to numbers
+	// all 3 param should eval to numbers
 	t, err := e.evalExpr(c.Args[0], env)
 	if err != nil {
 		return nil, err
@@ -402,7 +404,7 @@ func (e *Eval) applyTargetAura(c *ast.CallExpr, env *Env) (Obj, error) {
 	if !ok {
 		return nil, fmt.Errorf("apply_target_aura argument target index should evaluate to a number, got %v", t.Inspect())
 	}
-	//n should be int
+	// n should be int
 	var idx int = int(n.ival)
 	if n.isFloat {
 		idx = int(n.fval)
@@ -414,7 +416,7 @@ func (e *Eval) applyTargetAura(c *ast.CallExpr, env *Env) (Obj, error) {
 	}
 	var elem_str string = t.Inspect()
 	var elem = attributes.NoElement
-	//n should be float
+	// n should be float
 	for i := 0; i < int(attributes.NoElement); i++ {
 		if elem_str == attributes.ElementString[i] {
 			elem = attributes.Element(i)
@@ -428,13 +430,13 @@ func (e *Eval) applyTargetAura(c *ast.CallExpr, env *Env) (Obj, error) {
 	if !ok {
 		return nil, fmt.Errorf("apply_target_aura argument aura amount should evaluate to a number, got %v", t.Inspect())
 	}
-	//n should be float
+	// n should be float
 	var aura float64 = n.fval
 	if !n.isFloat {
 		aura = float64(n.ival)
 	}
 
-	//check if index is in range
+	// check if index is in range
 	if idx < 1 || idx > e.Core.Combat.EnemyCount() {
 		return nil, fmt.Errorf("index for set_default_target is invalid, should be between %v and %v, got %v", 1, e.Core.Combat.EnemyCount(), idx)
 	}
@@ -457,7 +459,7 @@ func (e *Eval) applyTargetAura(c *ast.CallExpr, env *Env) (Obj, error) {
 }
 
 func (e *Eval) killTarget(c *ast.CallExpr, env *Env) (Obj, error) {
-	//kill_target(1)
+	// kill_target(1)
 	if !e.Core.Combat.DamageMode {
 		return nil, errors.New("damage mode is not activated")
 	}
@@ -474,13 +476,13 @@ func (e *Eval) killTarget(c *ast.CallExpr, env *Env) (Obj, error) {
 	if !ok {
 		return nil, fmt.Errorf("kill_target argument target index should evaluate to a number, got %v", t.Inspect())
 	}
-	//n should be int
-	var idx int = int(n.ival)
+	// n should be int
+	idx := int(n.ival)
 	if n.isFloat {
 		idx = int(n.fval)
 	}
 
-	//check if index is in range
+	// check if index is in range
 	if idx < 1 || idx > e.Core.Combat.EnemyCount() {
 		return nil, fmt.Errorf("index for kill_target is invalid, should be between %v and %v, got %v", 1, e.Core.Combat.EnemyCount(), idx)
 	}
@@ -490,13 +492,56 @@ func (e *Eval) killTarget(c *ast.CallExpr, env *Env) (Obj, error) {
 	return &null{}, nil
 }
 
+func (e *Eval) pickUpCrystallize(c *ast.CallExpr, env *Env) (Obj, error) {
+	// pick_up_crystallize("element");
+	if len(c.Args) != 1 {
+		return nil, fmt.Errorf("invalid number of params for pick_up_crystallize, expected 1 got %v", len(c.Args))
+	}
+	t, err := e.evalExpr(c.Args[0], env)
+	if err != nil {
+		return nil, err
+	}
+	name, ok := t.(*strval)
+	if !ok {
+		return nil, fmt.Errorf("pick_up_crystallize argument element should evaluate to a string, got %v", t.Inspect())
+	}
+
+	// check if element is vaild
+	pickupEle := attributes.StringToEle(name.str)
+	if pickupEle == attributes.UnknownElement && name.str != "any" {
+		return nil, fmt.Errorf("pick_up_crystallize argument element %v is not a valid element", name.str)
+	}
+
+	var count int64
+	for _, g := range e.Core.Combat.Gadgets() {
+		shard, ok := g.(*reactable.CrystallizeShard)
+		// skip if no shard
+		if !ok {
+			continue
+		}
+		// skip if shard not specified element
+		if pickupEle != attributes.UnknownElement && shard.Shield.Ele != pickupEle {
+			continue
+		}
+		// try to pick up shard and stop if succeeded
+		if shard.AddShieldKillShard() {
+			count = 1
+			break
+		}
+	}
+
+	return &number{
+		ival: count,
+	}, nil
+}
+
 func (e *Eval) sin(c *ast.CallExpr, env *Env) (Obj, error) {
-	//sin(number goes in here)
+	// sin(number goes in here)
 	if len(c.Args) != 1 {
 		return nil, fmt.Errorf("invalid number of params for sin, expected 1 got %v", len(c.Args))
 	}
 
-	//should eval to a number
+	// should eval to a number
 	val, err := e.evalExpr(c.Args[0], env)
 	if err != nil {
 		return nil, err
@@ -515,12 +560,12 @@ func (e *Eval) sin(c *ast.CallExpr, env *Env) (Obj, error) {
 }
 
 func (e *Eval) cos(c *ast.CallExpr, env *Env) (Obj, error) {
-	//cos(number goes in here)
+	// cos(number goes in here)
 	if len(c.Args) != 1 {
 		return nil, fmt.Errorf("invalid number of params for cos, expected 1 got %v", len(c.Args))
 	}
 
-	//should eval to a number
+	// should eval to a number
 	val, err := e.evalExpr(c.Args[0], env)
 	if err != nil {
 		return nil, err
@@ -539,12 +584,12 @@ func (e *Eval) cos(c *ast.CallExpr, env *Env) (Obj, error) {
 }
 
 func (e *Eval) asin(c *ast.CallExpr, env *Env) (Obj, error) {
-	//asin(number goes in here)
+	// asin(number goes in here)
 	if len(c.Args) != 1 {
 		return nil, fmt.Errorf("invalid number of params for asin, expected 1 got %v", len(c.Args))
 	}
 
-	//should eval to a number
+	// should eval to a number
 	val, err := e.evalExpr(c.Args[0], env)
 	if err != nil {
 		return nil, err
@@ -563,12 +608,12 @@ func (e *Eval) asin(c *ast.CallExpr, env *Env) (Obj, error) {
 }
 
 func (e *Eval) acos(c *ast.CallExpr, env *Env) (Obj, error) {
-	//acos(number goes in here)
+	// acos(number goes in here)
 	if len(c.Args) != 1 {
 		return nil, fmt.Errorf("invalid number of params for acos, expected 1 got %v", len(c.Args))
 	}
 
-	//should eval to a number
+	// should eval to a number
 	val, err := e.evalExpr(c.Args[0], env)
 	if err != nil {
 		return nil, err
@@ -587,12 +632,12 @@ func (e *Eval) acos(c *ast.CallExpr, env *Env) (Obj, error) {
 }
 
 func (e *Eval) setOnTick(c *ast.CallExpr, env *Env) (Obj, error) {
-	//set_on_tick(func)
+	// set_on_tick(func)
 	if len(c.Args) != 1 {
 		return nil, fmt.Errorf("invalid number of params for set_on_tick, expected 1 got %v", len(c.Args))
 	}
 
-	//should eval to a function
+	// should eval to a function
 	val, err := e.evalExpr(c.Args[0], env)
 	if err != nil {
 		return nil, err
@@ -610,7 +655,7 @@ func (e *Eval) setOnTick(c *ast.CallExpr, env *Env) (Obj, error) {
 }
 
 func (e *Eval) executeAction(c *ast.CallExpr, env *Env) (Obj, error) {
-	//execute_action(char, action, params)
+	// execute_action(char, action, params)
 	if len(c.Args) != 3 {
 		return nil, fmt.Errorf("invalid number of params for execute_action, expected 3 got %v", len(c.Args))
 	}
@@ -655,7 +700,10 @@ func (e *Eval) executeAction(c *ast.CallExpr, env *Env) (Obj, error) {
 
 	charKey := keys.Char(char.ival)
 	actionKey := action.Action(ac.ival)
-	e.sendWork(&action.ActionEval{
+	if _, ok := e.Core.Player.ByKey(charKey); !ok {
+		return nil, fmt.Errorf("can't execute action: %v is not on this team", charKey)
+	}
+	e.sendWork(&action.Eval{
 		Char:   charKey,
 		Action: actionKey,
 		Param:  params,

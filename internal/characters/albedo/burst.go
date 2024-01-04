@@ -21,7 +21,7 @@ func init() {
 	burstFrames[action.ActionSwap] = 93    // Q -> Swap
 }
 
-func (c *char) Burst(p map[string]int) action.ActionInfo {
+func (c *char) Burst(p map[string]int) (action.Info, error) {
 	ai := combat.AttackInfo{
 		ActorIndex: c.Index,
 		Abil:       "Rite of Progeniture: Tectonic Tide",
@@ -29,6 +29,7 @@ func (c *char) Burst(p map[string]int) action.ActionInfo {
 		ICDTag:     attacks.ICDTagElementalBurst,
 		ICDGroup:   attacks.ICDGroupDefault,
 		StrikeType: attacks.StrikeTypeBlunt,
+		PoiseDMG:   100,
 		Element:    attributes.Geo,
 		Durability: 25,
 		Mult:       burst[c.TalentLvlBurst()],
@@ -63,6 +64,7 @@ func (c *char) Burst(p map[string]int) action.ActionInfo {
 			return
 		}
 		ai.Abil = "Rite of Progeniture: Tectonic Tide (Blossom)"
+		ai.PoiseDMG = 30
 		ai.Mult = burstPerBloom[c.TalentLvlBurst()]
 
 		// C2 damage is recalculated once on burstHitmark
@@ -97,10 +99,10 @@ func (c *char) Burst(p map[string]int) action.ActionInfo {
 	c.SetCDWithDelay(action.ActionBurst, 720, 74)
 	c.ConsumeEnergy(77)
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAbilFunc(burstFrames),
 		AnimationLength: burstFrames[action.InvalidAction],
 		CanQueueAfter:   burstFrames[action.ActionSwap],
 		State:           action.BurstState,
-	}
+	}, nil
 }

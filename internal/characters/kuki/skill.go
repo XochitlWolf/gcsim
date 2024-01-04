@@ -28,7 +28,7 @@ func init() {
 	skillFrames[action.ActionSwap] = 50    // E -> Swap
 }
 
-func (c *char) Skill(p map[string]int) action.ActionInfo {
+func (c *char) Skill(p map[string]int) (action.Info, error) {
 	// only drain HP when above 20% HP
 	if c.CurrentHPRatio() > hpDrainThreshold {
 		currentHP := c.CurrentHP()
@@ -52,6 +52,7 @@ func (c *char) Skill(p map[string]int) action.ActionInfo {
 		ICDTag:     attacks.ICDTagElementalArt,
 		ICDGroup:   attacks.ICDGroupDefault,
 		StrikeType: attacks.StrikeTypeBlunt,
+		PoiseDMG:   30,
 		Element:    attributes.Electro,
 		Durability: 25,
 		Mult:       skill[c.TalentLvlSkill()],
@@ -62,7 +63,7 @@ func (c *char) Skill(p map[string]int) action.ActionInfo {
 	// C2: Grass Ring of Sanctification's duration is increased by 3s.
 	skilldur := 720
 	if c.Base.Cons >= 2 {
-		skilldur = 900 //12+3s
+		skilldur = 900 // 12+3s
 	}
 
 	// this gets executed before kuki can experience hitlag so no need for char queue
@@ -79,12 +80,12 @@ func (c *char) Skill(p map[string]int) action.ActionInfo {
 
 	c.SetCDWithDelay(action.ActionSkill, 15*60, 7)
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAbilFunc(skillFrames),
 		AnimationLength: skillFrames[action.InvalidAction],
 		CanQueueAfter:   skillFrames[action.ActionJump], // earliest cancel
 		State:           action.SkillState,
-	}
+	}, nil
 }
 
 func (c *char) particleCB(a combat.AttackCB) {
@@ -119,11 +120,11 @@ func (c *char) bellTick(src int) func() {
 			Mult:       skilldot[c.TalentLvlSkill()],
 			FlatDmg:    c.a4Damage(),
 		}
-		//trigger damage
+		// trigger damage
 		//TODO: Check for snapshots
 		c.Core.QueueAttack(ai, combat.NewCircleHitOnTarget(c.Core.Combat.Player(), nil, 4), 2, 2, c.particleCB)
 
-		//A4 is considered here
+		// A4 is considered here
 		c.Core.Player.Heal(player.HealInfo{
 			Caller:  c.Index,
 			Target:  c.Core.Player.Active(),

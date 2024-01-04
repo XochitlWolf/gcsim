@@ -10,10 +10,13 @@ import (
 )
 
 // 30 = .5s
-const BUCKET_SIZE uint32 = 30
+const bucketSize uint32 = 30
 
 func init() {
-	agg.Register(NewAgg)
+	agg.Register(agg.Config{
+		Name: "damage",
+		New:  NewAgg,
+	})
 }
 
 // TODO: We need to populate targetDPS with 0s if damage wasn't done that iteration
@@ -80,7 +83,7 @@ func (b *buffer) Add(result stats.Result) {
 		stat.Add(val)
 	}
 
-	for i, char := range result.Characters {
+	for i := range result.Characters {
 		var charDPS float64
 		charElementDPS := makeElementMap()
 		charTargetDPS := make(map[int]float64)
@@ -102,7 +105,7 @@ func (b *buffer) Add(result stats.Result) {
 			stat.Add(val)
 		}
 
-		for _, ev := range char.DamageEvents {
+		for _, ev := range result.Characters[i].DamageEvents {
 			if _, ok := charTargetDPS[ev.Target]; !ok {
 				charTargetDPS[ev.Target] = 0
 			}
@@ -115,16 +118,22 @@ func (b *buffer) Add(result stats.Result) {
 				sourceDPSKey += " (" + reactModifier + ")"
 			}
 			sourceDPS[sourceDPSKey] += ev.Damage
-			sourceDamageInstances[sourceDPSKey] += 1
+			if ev.Damage > 0 {
+				sourceDamageInstances[sourceDPSKey] += 1
+			}
 		}
 
 		b.characterDPS[i].Add(charDPS * time)
 		for k, v := range charElementDPS {
+			if _, ok := elementDPS[k]; !ok {
+				elementDPS[k] = 0
+			}
+			elementDPS[k] += v
+
 			if _, ok := b.dpsByElement[i][k]; !ok {
 				b.dpsByElement[i][k] = &calc.StreamStats{}
 			}
 			b.dpsByElement[i][k].Add(v * time)
-			elementDPS[k] += v
 		}
 
 		for k, v := range charTargetDPS {
@@ -172,7 +181,7 @@ func (b *buffer) Add(result stats.Result) {
 func (b *buffer) Flush(result *model.SimulationStatistics) {
 	result.ElementDps = make(map[string]*model.DescriptiveStats)
 	for k, v := range b.elementDPS {
-		if v.Min > 0 {
+		if v.Mean() > 0 {
 			result.ElementDps[k] = agg.ToDescriptiveStats(v)
 		}
 	}
@@ -191,7 +200,7 @@ func (b *buffer) Flush(result *model.SimulationStatistics) {
 	for i, em := range b.dpsByElement {
 		elements := make(map[string]*model.DescriptiveStats)
 		for k, v := range em {
-			if v.Min > 0 {
+			if v.Mean() > 0 {
 				elements[k] = agg.ToDescriptiveStats(v)
 			}
 		}
@@ -218,7 +227,7 @@ func (b *buffer) Flush(result *model.SimulationStatistics) {
 		damageBuckets[i] = agg.ToDescriptiveStats(v)
 	}
 	result.DamageBuckets = &model.BucketStats{
-		BucketSize: BUCKET_SIZE,
+		BucketSize: bucketSize,
 		Buckets:    damageBuckets,
 	}
 
@@ -258,7 +267,7 @@ func (b *buffer) Flush(result *model.SimulationStatistics) {
 	}
 
 	result.CumulativeDamageContribution = &model.CharacterBucketStats{
-		BucketSize: BUCKET_SIZE,
+		BucketSize: bucketSize,
 		Characters: characterBuckets,
 	}
 }

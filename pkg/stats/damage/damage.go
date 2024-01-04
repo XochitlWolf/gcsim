@@ -10,10 +10,13 @@ import (
 )
 
 // 30 = .5s
-const BUCKET_SIZE int = 30
+const bucketSize int = 30
 
 func init() {
-	stats.Register(NewStat)
+	stats.Register(stats.Config{
+		Name: "damage",
+		New:  NewStat,
+	})
 }
 
 type buffer struct {
@@ -22,7 +25,7 @@ type buffer struct {
 	cumu    [][]float64
 }
 
-func NewStat(core *core.Core) (stats.StatsCollector, error) {
+func NewStat(core *core.Core) (stats.Collector, error) {
 	out := buffer{
 		events:  make([][]stats.DamageEvent, len(core.Player.Chars())),
 		buckets: make([]float64, 0),
@@ -42,7 +45,7 @@ func NewStat(core *core.Core) (stats.StatsCollector, error) {
 			return false
 		}
 
-		bucket := int(core.F / BUCKET_SIZE)
+		bucket := core.F / bucketSize
 		last := out.cumu[len(out.cumu)-1]
 		for bucket >= len(out.cumu) {
 			newBucket := make([]float64, len(core.Player.Chars()))

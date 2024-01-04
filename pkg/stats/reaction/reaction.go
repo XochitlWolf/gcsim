@@ -33,14 +33,17 @@ var eventToReaction = map[event.Event]reactions.ReactionType{
 }
 
 func init() {
-	stats.Register(NewStat)
+	stats.Register(stats.Config{
+		Name: "reaction",
+		New:  NewStat,
+	})
 }
 
 type buffer struct {
 	events [][]stats.ReactionEvent
 }
 
-func NewStat(core *core.Core) (stats.StatsCollector, error) {
+func NewStat(core *core.Core) (stats.Collector, error) {
 	out := buffer{
 		events: make([][]stats.ReactionEvent, len(core.Player.Chars())),
 	}

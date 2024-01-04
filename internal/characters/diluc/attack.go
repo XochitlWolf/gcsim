@@ -14,6 +14,7 @@ import (
 var (
 	attackFrames          [][]int
 	attackHitmarks        = []int{24, 39, 26, 49}
+	attackPoiseDMG        = []float64{108.1, 105.57, 119.03, 161.46}
 	attackHitlagHaltFrame = []float64{.1, .09, .09, .12}
 	attackHitboxes        = [][]float64{{2}, {2, 3}, {2}, {2, 3}}
 	attackOffsets         = []float64{0.5, -1, 0.5, -0.5}
@@ -31,7 +32,7 @@ func init() {
 	attackFrames[3] = frames.InitNormalCancelSlice(attackHitmarks[3], 99)
 }
 
-func (c *char) Attack(p map[string]int) action.ActionInfo {
+func (c *char) Attack(p map[string]int) (action.Info, error) {
 	// C6: Additionally, Searing Onslaught will not interrupt the Normal Attack combo.
 	if c.Base.Cons >= 6 && c.Core.Player.CurrentState() == action.SkillState {
 		c.NormalCounter = c.savedNormalCounter
@@ -44,6 +45,7 @@ func (c *char) Attack(p map[string]int) action.ActionInfo {
 		ICDTag:             attacks.ICDTagNormalAttack,
 		ICDGroup:           attacks.ICDGroupDefault,
 		StrikeType:         attacks.StrikeTypeBlunt,
+		PoiseDMG:           attackPoiseDMG[c.NormalCounter],
 		Element:            attributes.Physical,
 		Durability:         25,
 		Mult:               attack[c.NormalCounter][c.TalentLvlAttack()],
@@ -72,10 +74,10 @@ func (c *char) Attack(p map[string]int) action.ActionInfo {
 		c.savedNormalCounter = c.NormalCounter
 	}()
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAttackFunc(c.Character, attackFrames),
 		AnimationLength: attackFrames[c.NormalCounter][action.InvalidAction],
 		CanQueueAfter:   attackHitmarks[c.NormalCounter],
 		State:           action.NormalAttackState,
-	}
+	}, nil
 }

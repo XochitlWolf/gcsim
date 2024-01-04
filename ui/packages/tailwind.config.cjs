@@ -9,7 +9,9 @@ module.exports = {
   content: [
     "./index.html",
     "./src/**/*.{html,js,ts,jsx,tsx}",
-    "../ui/src/**/*.{js,ts,jsx,tsx}"
+    "../ui/src/**/*.{js,ts,jsx,tsx}",
+    // needed because otherwise tailwind breaks when importing DBEntryView from db package in ui package
+    "../db/src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     screens: {
@@ -36,6 +38,12 @@ module.exports = {
     },
     extend: {
       spacing: { 320: "320px", 280: "280" },
+      minWidth: {
+        wsm: "600px",
+        wmd: "700px",
+        wlg: "950px",
+        wxl: "1100px",
+      },
       colors: {
         "bp-header-color": "#394b59",
         "bp-card-color": "#30404d",
@@ -65,13 +73,13 @@ module.exports = {
           500: Colors.LIGHT_GRAY5,
         },
 
-        "anemo": "#61DBBB",
-        "geo": "#F8BA4E",
-        "electro": "#B25DCD",
-        "hydro": "#2F63D4",
-        "pyro": "#BF2818",
-        "cryo": "#77A2E6",
-        "dendro": "#A5C83B",
+        anemo: "#61DBBB",
+        geo: "#F8BA4E",
+        electro: "#B25DCD",
+        hydro: "#2F63D4",
+        pyro: "#BF2818",
+        cryo: "#77A2E6",
+        dendro: "#A5C83B",
       },
     },
   },

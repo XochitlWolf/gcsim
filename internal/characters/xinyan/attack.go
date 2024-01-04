@@ -14,6 +14,7 @@ import (
 var (
 	attackFrames          [][]int
 	attackHitmarks        = []int{25, 27, 47, 35}
+	attackPoiseDMG        = []float64{96.6, 93.15, 121.9, 146.63}
 	attackHitlagHaltFrame = []float64{.1, .1, .12, .12}
 	attackHitboxes        = [][]float64{{2}, {2, 2.5}, {2}, {2}}
 	attackOffsets         = []float64{0.5, 0, 1, 1}
@@ -31,7 +32,7 @@ func init() {
 	attackFrames[3] = frames.InitNormalCancelSlice(attackHitmarks[3], 94) // N4 -> N1
 }
 
-func (c *char) Attack(p map[string]int) action.ActionInfo {
+func (c *char) Attack(p map[string]int) (action.Info, error) {
 	ai := combat.AttackInfo{
 		ActorIndex:         c.Index,
 		Abil:               fmt.Sprintf("Normal %v", c.NormalCounter),
@@ -39,6 +40,7 @@ func (c *char) Attack(p map[string]int) action.ActionInfo {
 		ICDTag:             attacks.ICDTagNormalAttack,
 		ICDGroup:           attacks.ICDGroupDefault,
 		StrikeType:         attacks.StrikeTypeBlunt,
+		PoiseDMG:           attackPoiseDMG[c.NormalCounter],
 		Element:            attributes.Physical,
 		Durability:         25,
 		Mult:               attack[c.NormalCounter][c.TalentLvlAttack()],
@@ -70,12 +72,12 @@ func (c *char) Attack(p map[string]int) action.ActionInfo {
 
 	defer c.AdvanceNormalIndex()
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAttackFunc(c.Character, attackFrames),
 		AnimationLength: attackFrames[c.NormalCounter][action.InvalidAction],
 		CanQueueAfter:   attackHitmarks[c.NormalCounter],
 		State:           action.NormalAttackState,
-	}
+	}, nil
 }
 
 // TODO: charged attack

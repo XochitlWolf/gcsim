@@ -20,7 +20,7 @@ var key = map[string]TokenType{
 	"fallthrough": keywordFallthrough,
 	"return":      keywordReturn,
 	"for":         keywordFor,
-	//genshin specific keywords
+	// genshin specific keywords
 	"options":             keywordOptions,
 	"add":                 keywordAdd,
 	"char":                keywordChar,
@@ -39,13 +39,15 @@ var key = map[string]TokenType{
 	"target":              keywordTarget,
 	"particle_threshold":  keywordParticleThreshold,
 	"particle_drop_count": keywordParticleDropCount,
+	"particle_element":    keywordParticleElement,
 	"resist":              keywordResist,
 	"energy":              keywordEnergy,
-	//commands
-	//team keywords
-	//flags
+	"hurt":                keywordHurt,
+	// commands
+	// team keywords
+	// flags
 	// ??
-	//energy/hurt event related
+	// energy/hurt event related
 	// target related
 }
 

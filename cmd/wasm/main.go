@@ -1,8 +1,11 @@
+//go:build !codeanalysis
+
 package main
 
 import (
 	"encoding/json"
 	"errors"
+	"slices"
 	"strconv"
 	"syscall/js"
 
@@ -75,7 +78,7 @@ func doSample(this js.Value, args []js.Value) (out interface{}) {
 		return marshal(err)
 	}
 
-	marshalled, err := data.MarshalJson()
+	marshalled, err := data.MarshalJSON()
 	if err != nil {
 		return marshal(err)
 	}
@@ -175,7 +178,11 @@ func initializeAggregator(this js.Value, args []js.Value) (out interface{}) {
 
 	aggregators = aggregators[:0]
 	for _, aggregator := range agg.Aggregators() {
-		a, err := aggregator(simcfg)
+		enabled := simcfg.Settings.CollectStats
+		if len(enabled) > 0 && !slices.Contains(enabled, aggregator.Name) {
+			continue
+		}
+		a, err := aggregator.New(simcfg)
 		if err != nil {
 			return marshal(err)
 		}
@@ -200,7 +207,7 @@ func initializeAggregator(this js.Value, args []js.Value) (out interface{}) {
 	// // store the result for reuse
 	cachedResult = result
 
-	marshalled, err := result.MarshalJson()
+	marshalled, err := result.MarshalJSON()
 	if err != nil {
 		return marshal(err)
 	}
@@ -267,7 +274,7 @@ func flush(this js.Value, args []js.Value) (out interface{}) {
 		Hash:  hash,
 	}
 
-	marshalled, err := signedResults.MarshalJson()
+	marshalled, err := signedResults.MarshalJSON()
 	if err != nil {
 		return marshal(err)
 	}

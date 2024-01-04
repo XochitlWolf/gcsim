@@ -2,7 +2,6 @@ package geometry
 
 import (
 	"fmt"
-	"math"
 )
 
 // center = true center of rect
@@ -96,6 +95,7 @@ func (r *Rectangle) String() string {
 
 func (r *Rectangle) PointInShape(p Point) bool {
 	// set origin to rectangle center by shifting point
+	// effectively makes rectangle center X:0, Y:0
 	relative := p.Sub(r.center)
 
 	// take direction from rectangle and rotate point in the opposite direction to remove rectangle rotation
@@ -106,11 +106,11 @@ func (r *Rectangle) PointInShape(p Point) bool {
 	checkX := local.X
 	checkY := local.Y
 
-	bottomLeft := Point{X: -r.w / 2, Y: -r.h / 2}.Add(r.center)
+	bottomLeft := Point{X: -r.w / 2, Y: -r.h / 2}
 	minX := bottomLeft.X
 	minY := bottomLeft.Y
 
-	topRight := Point{X: r.w / 2, Y: r.h / 2}.Add(r.center)
+	topRight := Point{X: r.w / 2, Y: r.h / 2}
 	maxX := topRight.X
 	maxY := topRight.Y
 
@@ -126,24 +126,24 @@ func (r *Rectangle) IntersectCircle(c Circle) bool {
 // https://stackoverflow.com/a/115520
 // https://gist.github.com/shamansir/3007244
 // https://stackoverflow.com/a/6016515
-func (r1 *Rectangle) IntersectRectangle(r2 Rectangle) bool {
+func (r *Rectangle) IntersectRectangle(r2 Rectangle) bool {
 	// AABB test
-	if !AABBTest(r1.aabb, r2.aabb) {
+	if !AABBTest(r.aabb, r2.aabb) {
 		return false
 	}
 
 	// can skip SAT if both rectangles are axis aligned
-	if (r1.dir.X == 0 || r1.dir.Y == 0) && (r2.dir.X == 0 || r2.dir.Y == 0) {
+	if (r.dir.X == 0 || r.dir.Y == 0) && (r2.dir.X == 0 || r2.dir.Y == 0) {
 		return true
 	}
 
 	// SAT test
 	// https://dyn4j.org/2010/01/sat/
-	r1Axes := r1.getAxes()
+	r1Axes := r.getAxes()
 	r2Axes := r2.getAxes()
 	for i := 0; i < len(r1Axes); i++ {
 		axis := r1Axes[i]
-		rProj1 := getProjection(r1.corners, axis)
+		rProj1 := getProjection(r.corners, axis)
 		rProj2 := getProjection(r2.corners, axis)
 		if !rProj1.overlap(rProj2) {
 			return false
@@ -151,7 +151,7 @@ func (r1 *Rectangle) IntersectRectangle(r2 Rectangle) bool {
 	}
 	for i := 0; i < len(r2Axes); i++ {
 		axis := r2Axes[i]
-		rProj1 := getProjection(r1.corners, axis)
+		rProj1 := getProjection(r.corners, axis)
 		rProj2 := getProjection(r2.corners, axis)
 		if !rProj1.overlap(rProj2) {
 			return false
@@ -177,7 +177,7 @@ type Projection struct {
 
 // https://stackoverflow.com/questions/64745139/check-if-two-integer-ranges-overlap
 func (p1 *Projection) overlap(p2 Projection) bool {
-	return math.Max(p1.min, p2.min) <= math.Min(p1.max, p2.max)
+	return max(p1.min, p2.min) <= min(p1.max, p2.max)
 }
 
 func getProjection(corners []Point, axis Point) Projection {

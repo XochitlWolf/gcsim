@@ -38,7 +38,6 @@ func NewChar(s *core.Core, w *character.CharWrapper, _ info.CharacterProfile) er
 }
 
 func (c *char) Init() error {
-
 	c.maxSkydwellerPoints = 100
 	c.a4Prob = 0.16
 	c.a1ValidBuffs = []attributes.Element{attributes.Pyro, attributes.Hydro, attributes.Electro, attributes.Cryo}
@@ -47,7 +46,7 @@ func (c *char) Init() error {
 }
 
 func (c *char) ActionStam(a action.Action, p map[string]int) float64 {
-	if c.StatusIsActive(skillKey) {
+	if c.StatusIsActive(SkillKey) {
 		return 0
 	}
 	return c.Character.ActionStam(a, p)
@@ -55,15 +54,17 @@ func (c *char) ActionStam(a action.Action, p map[string]int) float64 {
 
 // Overwriting of remaining actions to account for falling state
 
-func (c *char) Walk(p map[string]int) action.ActionInfo {
+func (c *char) Walk(p map[string]int) (action.Info, error) {
 	delay := c.checkForSkillEnd()
 
-	ai := c.Character.Walk(p)
-	ai.Frames = func(next action.Action) int { return delay + ai.Frames(next) }
-	ai.AnimationLength = delay + ai.AnimationLength
-	ai.CanQueueAfter = delay + ai.CanQueueAfter
+	ai, err := c.Character.Walk(p)
 
-	return ai
+	f := delay + ai.AnimationLength
+	ai.Frames = func(action.Action) int { return f }
+	ai.AnimationLength = f
+	ai.CanQueueAfter = f
+
+	return ai, err
 }
 
 func (c *char) Condition(fields []string) (any, error) {

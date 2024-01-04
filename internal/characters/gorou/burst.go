@@ -1,12 +1,15 @@
 package gorou
 
 import (
+	"math"
+
 	"github.com/genshinsim/gcsim/internal/frames"
 	"github.com/genshinsim/gcsim/pkg/core/action"
 	"github.com/genshinsim/gcsim/pkg/core/attacks"
 	"github.com/genshinsim/gcsim/pkg/core/attributes"
 	"github.com/genshinsim/gcsim/pkg/core/combat"
 	"github.com/genshinsim/gcsim/pkg/core/player"
+	"github.com/genshinsim/gcsim/pkg/reactable"
 )
 
 var burstFrames []int
@@ -21,7 +24,7 @@ func init() {
 	burstFrames[action.ActionSwap] = 55    // Q -> Swap
 }
 
-func (c *char) Burst(p map[string]int) action.ActionInfo {
+func (c *char) Burst(p map[string]int) (action.Info, error) {
 	// Initial Hit
 	// A1/C6/Q duration all start on Initial Hit
 	c.Core.Tasks.Add(func() {
@@ -32,10 +35,12 @@ func (c *char) Burst(p map[string]int) action.ActionInfo {
 			ICDTag:     attacks.ICDTagNone,
 			ICDGroup:   attacks.ICDGroupDefault,
 			StrikeType: attacks.StrikeTypeBlunt,
+			PoiseDMG:   40,
 			Element:    attributes.Geo,
 			Durability: 25,
 			Mult:       burst[c.TalentLvlBurst()],
 			FlatDmg:    c.a4Burst(),
+			UseDef:     true,
 		}
 		c.Core.QueueAttack(ai, combat.NewCircleHitOnTarget(c.Core.Combat.Player(), nil, 5), 0, 0)
 
@@ -84,26 +89,26 @@ func (c *char) Burst(p map[string]int) action.ActionInfo {
 	c.SetCD(action.ActionBurst, 20*60)
 	c.ConsumeEnergy(7)
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAbilFunc(burstFrames),
 		AnimationLength: burstFrames[action.InvalidAction],
 		CanQueueAfter:   burstFrames[action.ActionDash], // earliest cancel
 		State:           action.BurstState,
-	}
+	}, nil
 }
 
 // recursive function for dealing damage
 func (c *char) gorouCrystalCollapse(src int) func() {
 	return func() {
-		//do nothing if this has been overwritten
+		// do nothing if this has been overwritten
 		if c.qFieldSrc != src {
 			return
 		}
-		//do nothing if field expired
+		// do nothing if field expired
 		if c.Core.Status.Duration(generalGloryKey) == 0 {
 			return
 		}
-		//trigger damage
+		// trigger damage
 		ai := combat.AttackInfo{
 			ActorIndex: c.Index,
 			Abil:       "Crystal Collapse",
@@ -115,31 +120,56 @@ func (c *char) gorouCrystalCollapse(src int) func() {
 			Durability: 25,
 			Mult:       burstTick[c.TalentLvlBurst()],
 			FlatDmg:    c.a4Burst(),
+			UseDef:     true,
 		}
-
-		enemy := c.Core.Combat.ClosestEnemyWithinArea(combat.NewCircleHitOnTarget(c.Core.Combat.Player(), nil, 8), nil)
+		collapseArea := combat.NewCircleHitOnTarget(c.Core.Combat.Player(), nil, 8)
+		enemy := c.Core.Combat.ClosestEnemyWithinArea(collapseArea, nil)
 		if enemy != nil {
 			//TODO: skill damage frames
 			c.Core.QueueAttack(ai, combat.NewCircleHitOnTarget(enemy, nil, 3.5), 0, 1)
 		}
 
-		//tick every 1.5s
+		// suck in 1 crystallize shard
+		for _, g := range c.Core.Combat.Gadgets() {
+			cs, ok := g.(*reactable.CrystallizeShard)
+			// skip if no shard
+			if !ok {
+				continue
+			}
+			// skip if shard not in area
+			if !cs.IsWithinArea(collapseArea) {
+				continue
+			}
+			// approximate sucking in as 0.4m per frame (~8m distance took 20f to arrive at gorou)
+			distance := cs.Pos().Distance(collapseArea.Shape.Pos())
+			travel := int(math.Ceil(distance / 0.4))
+			// special check to account for edge case if shard just spawned and will arrive before it can be picked up
+			if c.Core.F+travel < cs.EarliestPickup {
+				continue
+			}
+			c.Core.Tasks.Add(func() {
+				cs.AddShieldKillShard()
+			}, travel)
+			break
+		}
+
+		// tick every 1.5s
 		c.Core.Tasks.Add(c.gorouCrystalCollapse(src), 90)
 	}
 }
 
 func (c *char) gorouBurstHealField(src int) func() {
 	return func() {
-		//do nothing if this has been overwritten
+		// do nothing if this has been overwritten
 		if c.qFieldSrc != src {
 			return
 		}
-		//do nothing if field expired
+		// do nothing if field expired
 		if c.Core.Status.Duration(generalGloryKey) == 0 {
 			return
 		}
-		//When General's Glory is in the "Impregnable" or "Crunch" states, it will also heal active characters
-		//within its AoE by 50% of Gorou's own DEF every 1.5s.
+		// When General's Glory is in the "Impregnable" or "Crunch" states, it will also heal active characters
+		// within its AoE by 50% of Gorou's own DEF every 1.5s.
 		amt := c.Base.Def*(1+c.healFieldStats[attributes.DEFP]) + c.healFieldStats[attributes.DEF]
 		c.Core.Player.Heal(player.HealInfo{
 			Caller:  c.Index,
@@ -149,7 +179,7 @@ func (c *char) gorouBurstHealField(src int) func() {
 			Bonus:   c.Stat(attributes.Heal),
 		})
 
-		//tick every 1.5s
+		// tick every 1.5s
 		c.Core.Tasks.Add(c.gorouBurstHealField(src), 90)
 	}
 }

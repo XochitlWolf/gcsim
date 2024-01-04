@@ -50,7 +50,7 @@ func init() {
 	attackFrames[attackTypeTwirl][action.ActionWalk] = 42
 }
 
-func (c *char) Attack(p map[string]int) action.ActionInfo {
+func (c *char) Attack(p map[string]int) (action.Info, error) {
 	travel, ok := p["travel"]
 	if !ok {
 		travel = 10
@@ -97,6 +97,7 @@ func (c *char) Attack(p map[string]int) action.ActionInfo {
 		ICDTag:     attacks.ICDTagNormalAttack,
 		ICDGroup:   attacks.ICDGroupDefault,
 		StrikeType: attacks.StrikeTypeBlunt,
+		PoiseDMG:   45,
 		Element:    attributes.Geo,
 		Durability: 25,
 		Mult:       attack[c.TalentLvlAttack()],
@@ -118,13 +119,13 @@ func (c *char) Attack(p map[string]int) action.ActionInfo {
 	}
 
 	c.prevAttack = nextAttack
-
-	return action.ActionInfo{
+	atkspd := c.Stat(attributes.AtkSpd)
+	return action.Info{
 		Frames: func(next action.Action) int {
-			return frames.AtkSpdAdjust(attackFrames[nextAttack][next], c.Stat(attributes.AtkSpd))
+			return frames.AtkSpdAdjust(attackFrames[nextAttack][next], atkspd)
 		},
 		AnimationLength: attackFrames[nextAttack][action.InvalidAction],
 		CanQueueAfter:   attackLockout[nextAttack],
 		State:           action.NormalAttackState,
-	}
+	}, nil
 }

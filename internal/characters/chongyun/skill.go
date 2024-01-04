@@ -31,11 +31,10 @@ func init() {
 	skillFrames[action.ActionSwap] = 49    // E -> J
 }
 
-func (c *char) Skill(p map[string]int) action.ActionInfo {
-
-	//if fieldSrc is < duration then this is prob a sac proc
-	//we need to stop the old field from ticking (by changing fieldSrc)
-	//and also trigger a4 delayed damage
+func (c *char) Skill(p map[string]int) (action.Info, error) {
+	// if fieldSrc is < duration then this is prob a sac proc
+	// we need to stop the old field from ticking (by changing fieldSrc)
+	// and also trigger a4 delayed damage
 	src := c.Core.F
 
 	ai := combat.AttackInfo{
@@ -45,6 +44,7 @@ func (c *char) Skill(p map[string]int) action.ActionInfo {
 		ICDTag:             attacks.ICDTagElementalArt,
 		ICDGroup:           attacks.ICDGroupDefault,
 		StrikeType:         attacks.StrikeTypeBlunt,
+		PoiseDMG:           150,
 		Element:            attributes.Cryo,
 		Durability:         50,
 		Mult:               skill[c.TalentLvlSkill()],
@@ -70,6 +70,7 @@ func (c *char) Skill(p map[string]int) action.ActionInfo {
 		ICDTag:     attacks.ICDTagNone,
 		ICDGroup:   attacks.ICDGroupDefault,
 		StrikeType: attacks.StrikeTypeBlunt,
+		PoiseDMG:   100,
 		Element:    attributes.Cryo,
 		Durability: 25,
 		Mult:       skill[c.TalentLvlSkill()],
@@ -153,12 +154,12 @@ func (c *char) Skill(p map[string]int) action.ActionInfo {
 
 	c.SetCDWithDelay(action.ActionSkill, 900, 34)
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAbilFunc(skillFrames),
 		AnimationLength: skillFrames[action.InvalidAction],
 		CanQueueAfter:   skillFrames[action.ActionDash], // earliest cancel
 		State:           action.SkillState,
-	}
+	}, nil
 }
 
 func (c *char) particleCB(a combat.AttackCB) {
@@ -177,7 +178,7 @@ func (c *char) onSwapHook() {
 		if c.Core.Status.Duration("chongyunfield") == 0 {
 			return false
 		}
-		//add infusion on swap
+		// add infusion on swap
 		c.Core.Log.NewEvent("chongyun adding infusion on swap", glog.LogCharacterEvent, c.Index).
 			Write("expiry", c.Core.F+infuseDur[c.TalentLvlSkill()])
 		active := c.Core.Player.ActiveChar()
@@ -187,10 +188,11 @@ func (c *char) onSwapHook() {
 }
 
 func (c *char) infuse(active *character.CharWrapper) {
-	//c2 reduces CD by 15%
+	dur := infuseDur[c.TalentLvlSkill()]
+	// c2 reduces CD by 15%
 	if c.Base.Cons >= 2 {
 		active.AddCooldownMod(character.CooldownMod{
-			Base: modifier.NewBaseWithHitlag("chongyun-c2", 126),
+			Base: modifier.NewBaseWithHitlag("chongyun-c2", dur),
 			Amount: func(a action.Action) float64 {
 				if a == action.ActionSkill || a == action.ActionBurst {
 					return -0.15
@@ -207,12 +209,12 @@ func (c *char) infuse(active *character.CharWrapper) {
 			active.Index,
 			"chongyun-ice-weapon",
 			attributes.Cryo,
-			infuseDur[c.TalentLvlSkill()],
+			dur,
 			true,
 			attacks.AttackTagNormal, attacks.AttackTagExtra, attacks.AttackTagPlunge,
 		)
 		c.Core.Log.NewEvent("chongyun adding infusion", glog.LogCharacterEvent, c.Index).
-			Write("expiry", c.Core.F+infuseDur[c.TalentLvlSkill()])
+			Write("expiry", c.Core.F+dur)
 		// A1:
 		// Sword, Claymore, or Polearm-wielding characters within the field created by
 		// Spirit Blade: Chonghua's Layered Frost have their Normal ATK SPD increased by 8%.
@@ -220,7 +222,7 @@ func (c *char) infuse(active *character.CharWrapper) {
 			m := make([]float64, attributes.EndStatType)
 			m[attributes.AtkSpd] = 0.08
 			active.AddStatMod(character.StatMod{
-				Base:         modifier.NewBaseWithHitlag("chongyun-field", 126),
+				Base:         modifier.NewBaseWithHitlag("chongyun-field", dur),
 				AffectedStat: attributes.NoStat,
 				Amount: func() ([]float64, bool) {
 					return m, true

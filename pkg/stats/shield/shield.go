@@ -22,14 +22,17 @@ var elements = [...]attributes.Element{
 const normalized = "normalized"
 
 func init() {
-	stats.Register(NewStat)
+	stats.Register(stats.Config{
+		Name: "shield",
+		New:  NewStat,
+	})
 }
 
 type buffer struct {
 	shields map[string][]stats.ShieldInterval
 }
 
-func NewStat(core *core.Core) (stats.StatsCollector, error) {
+func NewStat(core *core.Core) (stats.Collector, error) {
 	out := buffer{
 		shields: make(map[string][]stats.ShieldInterval),
 	}

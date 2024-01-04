@@ -8,14 +8,17 @@ import (
 )
 
 func init() {
-	stats.Register(NewStat)
+	stats.Register(stats.Config{
+		Name: "position",
+		New:  NewStat,
+	})
 }
 
 type buffer struct {
 	targetOverlap bool
 }
 
-func NewStat(core *core.Core) (stats.StatsCollector, error) {
+func NewStat(core *core.Core) (stats.Collector, error) {
 	out := buffer{
 		targetOverlap: overlaps(core.Combat.Enemies()),
 	}

@@ -1,8 +1,6 @@
 package sayu
 
 import (
-	"math"
-
 	"github.com/genshinsim/gcsim/internal/frames"
 	"github.com/genshinsim/gcsim/pkg/core/action"
 	"github.com/genshinsim/gcsim/pkg/core/attacks"
@@ -23,7 +21,7 @@ func init() {
 	burstFrames[action.ActionSwap] = 64    // Q -> Swap
 }
 
-func (c *char) Burst(p map[string]int) action.ActionInfo {
+func (c *char) Burst(p map[string]int) (action.Info, error) {
 	// dmg
 	ai := combat.AttackInfo{
 		ActorIndex:       c.Index,
@@ -65,8 +63,8 @@ func (c *char) Burst(p map[string]int) action.ActionInfo {
 
 	if c.Base.Cons >= 6 {
 		// TODO: is it snapshots?
-		d.Info.FlatDmg += atk * math.Min(d.Snapshot.Stats[attributes.EM]*0.002, 4.0)
-		heal += math.Min(d.Snapshot.Stats[attributes.EM]*3, 6000)
+		d.Info.FlatDmg += atk * min(d.Snapshot.Stats[attributes.EM]*0.002, 4.0)
+		heal += min(d.Snapshot.Stats[attributes.EM]*3, 6000)
 	}
 
 	// make sure that this task gets executed:
@@ -109,12 +107,12 @@ func (c *char) Burst(p map[string]int) action.ActionInfo {
 	c.SetCD(action.ActionBurst, 20*60)
 	c.ConsumeEnergy(7)
 
-	return action.ActionInfo{
+	return action.Info{
 		Frames:          frames.NewAbilFunc(burstFrames),
 		AnimationLength: burstFrames[action.InvalidAction],
 		CanQueueAfter:   burstFrames[action.ActionDash], // earliest cancel
 		State:           action.BurstState,
-	}
+	}, nil
 }
 
 // TODO: is this helper function needed?

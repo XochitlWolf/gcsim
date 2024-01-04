@@ -33,10 +33,10 @@ func init() {
 	chargeFramesE[action.ActionJump] = 38
 }
 
-func (c *char) ChargeAttack(p map[string]int) action.ActionInfo {
+func (c *char) ChargeAttack(p map[string]int) (action.Info, error) {
 	delay := c.checkForSkillEnd()
 
-	if c.StatusIsActive(skillKey) {
+	if c.StatusIsActive(SkillKey) {
 		// Can only occur if delay == 0, so it can be disregarded
 		return c.WindfavoredChargeAttack(p)
 	}
@@ -64,19 +64,19 @@ func (c *char) ChargeAttack(p map[string]int) action.ActionInfo {
 		c.makeA1ElectroCB(),
 		c.particleCB,
 	)
-
-	return action.ActionInfo{
+	atkspd := c.Stat(attributes.AtkSpd)
+	return action.Info{
 		Frames: func(next action.Action) int {
 			return windup +
-				frames.AtkSpdAdjust(chargeFramesNormal[next], c.Stat(attributes.AtkSpd))
+				frames.AtkSpdAdjust(chargeFramesNormal[next], atkspd)
 		},
 		AnimationLength: windup + chargeFramesNormal[action.InvalidAction],
 		CanQueueAfter:   windup + chargeFramesNormal[action.ActionDash],
 		State:           action.ChargeAttackState,
-	}
+	}, nil
 }
 
-func (c *char) WindfavoredChargeAttack(p map[string]int) action.ActionInfo {
+func (c *char) WindfavoredChargeAttack(p map[string]int) (action.Info, error) {
 	windup := c.chargeWindupE()
 
 	ai := combat.AttackInfo{
@@ -101,16 +101,16 @@ func (c *char) WindfavoredChargeAttack(p map[string]int) action.ActionInfo {
 		c.makeA1ElectroCB(),
 		c.particleCB,
 	)
-
-	return action.ActionInfo{
+	atkspd := c.Stat(attributes.AtkSpd)
+	return action.Info{
 		Frames: func(next action.Action) int {
 			return windup +
-				frames.AtkSpdAdjust(chargeFramesE[next], c.Stat(attributes.AtkSpd))
+				frames.AtkSpdAdjust(chargeFramesE[next], atkspd)
 		},
 		AnimationLength: windup + chargeFramesE[action.InvalidAction],
 		CanQueueAfter:   windup + chargeFramesE[action.ActionDash],
 		State:           action.ChargeAttackState,
-	}
+	}, nil
 }
 
 func (c *char) chargeWindupNormal() int {

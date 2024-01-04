@@ -1,24 +1,22 @@
 package kirara
 
 import (
-	"math"
-
 	"github.com/genshinsim/gcsim/pkg/core/attributes"
 	"github.com/genshinsim/gcsim/pkg/core/player/shield"
 )
 
 func (c *char) genShield(src string, shieldamt float64) {
-	existingShield := c.Core.Player.Shields.Get(shield.ShieldKiraraSkill)
+	existingShield := c.Core.Player.Shields.Get(shield.KiraraSkill)
 	if existingShield != nil {
 		shieldamt += existingShield.CurrentHP()
 	}
-	shieldamt = math.Min(shieldamt, c.maxShieldHP())
+	shieldamt = min(shieldamt, c.maxShieldHP())
 
 	// add shield
 	c.Core.Tasks.Add(func() {
 		c.Core.Player.Shields.Add(&shield.Tmpl{
 			Src:        c.Core.F,
-			ShieldType: shield.ShieldKiraraSkill,
+			ShieldType: shield.KiraraSkill,
 			Name:       src,
 			HP:         shieldamt,
 			Ele:        attributes.Dendro,

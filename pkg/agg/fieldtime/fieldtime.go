@@ -9,7 +9,10 @@ import (
 )
 
 func init() {
-	agg.Register(NewAgg)
+	agg.Register(agg.Config{
+		Name: "fieldtime",
+		New:  NewAgg,
+	})
 }
 
 type buffer struct {
@@ -29,8 +32,8 @@ func NewAgg(cfg *info.ActionList) (agg.Aggregator, error) {
 }
 
 func (b *buffer) Add(result stats.Result) {
-	for i, c := range result.Characters {
-		b.fieldTimes[i].Add(float64(c.ActiveTime) / 60)
+	for i := range result.Characters {
+		b.fieldTimes[i].Add(float64(result.Characters[i].ActiveTime) / 60)
 	}
 }
 
