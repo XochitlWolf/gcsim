@@ -379,7 +379,10 @@ func (s *Simulation) handleHurt() {
 			ap.SkipTargets[targets.TargettablePlayer] = false
 			ap.SkipTargets[targets.TargettableEnemy] = true
 			ap.SkipTargets[targets.TargettableGadget] = true
-			s.C.QueueAttack(ai, ap, -1, 0) // -1 to avoid snapshot
+			lvl := combat.Snapshot{
+				Char Lvl:   100
+			}
+			s.C.QueueAttack(ai, ap, lvl, 0)
 		}, f)
 
 		s.C.Log.NewEventBuildMsg(glog.LogHurtEvent, -1, "hurt queued (once)").
